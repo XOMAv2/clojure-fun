@@ -1,44 +1,28 @@
-# warranty-service
+# Warranty Service
 
-FIXME: description
+## Описание API
+1. `GET /api/v1/warranty/{itemUid}` – информация о статусе гарантии;
+2. `POST /api/v1/warranty/{itemUid}/warranty` – запрос решения по гарантии;
+3. `POST /api/v1/warranty/{itemUid}` – запрос на начало гарантийного периода;
+4. `DELETE /api/v1/warranty/{itemUid}` – запрос на закрытие гарантии.
 
-## Installation
+[https://warranty-service-app.herokuapp.com/api-docs](https://warranty-service-app.herokuapp.com/api-docs)
 
-Download from http://example.com/FIXME.
+## Логика работы
+Гарантия привязана к `item_uid`, каждая запись о гарантии имеет три статуса: `ON_WARRANTY`, `USE_WARRANTY`, `REMOVED_FROM_WARRANTY`.
+При создании заказа (метод 3) создается запись и устанавливается статус `ON_WARRANTY`.  
+При закрытии заказа (метод 4) устанавливается статус `REMOVED_FROM_WARRANTY`.  
+При гарантийном запросе (метод 2) проверяется статус гарантии, если статус отличен от `ON_WARRANY`, то решение `REFUSED`.
+В запросе от Warehouse приходит количество доступных товаров. Если товар присутствует на складе, то решение `RETURN`, иначе `FIXING`.   
 
-## Usage
-
-FIXME: explanation
-
-    $ java -jar warranty-service-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2020 FIXME
-
-This program and the accompanying materials are made available under the
-terms of the Eclipse Public License 2.0 which is available at
-http://www.eclipse.org/legal/epl-2.0.
-
-This Source Code may also be made available under the following Secondary
-Licenses when the conditions for such availability set forth in the Eclipse
-Public License, v. 2.0 are satisfied: GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or (at your
-option) any later version, with the GNU Classpath Exception which is available
-at https://www.gnu.org/software/classpath/license.html.
+## Структура таблиц
+```postgresql
+CREATE TABLE warranty
+(
+    id            SERIAL CONSTRAINT warranty_pkey PRIMARY KEY,
+    comment       VARCHAR(1024),
+    item_uid      UUID         NOT NULL CONSTRAINT idx_warranty_item_uid UNIQUE,
+    status        VARCHAR(255) NOT NULL,
+    warranty_date TIMESTAMP    NOT NULL
+);
+```
