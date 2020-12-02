@@ -1,0 +1,15 @@
+{:env-type :local
+ :env {:local {:db-spec {:dbtype "postgresql"
+                         :dbname "rsoi-lab02"
+                         :host "localhost"
+                         :port 5432
+                         :user "postgres"
+                         :password "123"}}
+       :heroku {:db-spec {:dbtype "postgresql"
+                          :host "ec2-176-34-114-78.eu-west-1.compute.amazonaws.com"
+                          :dbname "db2jefklljn3qb"
+                          :user "jlulmiacdrwttq"
+                          :port 5432
+                          :password "1451557504c0f35cf8a982515a3656e3bf3e5be6f877cca1d488cdb7e88a20ec"
+                          :uri "postgres://jlulmiacdrwttq:1451557504c0f35cf8a982515a3656e3bf3e5be6f877cca1d488cdb7e88a20ec@ec2-176-34-114-78.eu-west-1.compute.amazonaws.com:5432/db2jefklljn3qb"}
+                :service-url "https://lab2-xomav2-warranty-service.herokuapp.com/"}}}
