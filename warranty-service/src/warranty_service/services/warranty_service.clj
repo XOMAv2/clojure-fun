@@ -2,14 +2,17 @@
   (:require [warranty-service.repositories.warranty-repository :as rep]
             [warranty-service.helpers.subroutines :refer [create-response
                                                           sql-timestamp-to-local-date-time]]
-            [java-time :as time]))
+            [java-time :as time])
+  (:use [clojure.set :only [rename-keys]]))
 
 (defn get-warranty
   "Получение строки с указанным item-uid из таблицы warranty через репозиторий."
   [item-uid]
   (try (let [warranty (rep/get-warranty item-uid)]
          (if warranty
-           (create-response 200 warranty)
+           (create-response 200
+                            (rename-keys warranty {:item_uid :itemUid})
+                            "application/json")
            (create-response 404
                             {:message "The warranty with the specified item_uid was not found."})))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
@@ -27,7 +30,7 @@
   "Удаление строки с указанным item-uid из таблицы warranty через репозиторий."
   [item-uid]
   (try (rep/delete-warranty! item-uid)
-       {:status 200}
+       {:status 204}
        (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn active-warranty?
@@ -57,8 +60,10 @@
                                        (assoc :status (if (= decision "REFUSE")
                                                         "REMOVED_FROM_WARRANTY"
                                                         "USE_WARRANTY"))))
-             (create-response 200 {:decision decision
-                                   :warrantyDate (:warranty_date warranty)}))
+             (create-response 200
+                              {:decision decision
+                               :warrantyDate (:warranty_date warranty)}
+                              "application/json"))
            (create-response 404
                             {:message "The warranty with the specified item-uid was not found."})))
        (catch Exception e (create-response 500 {:message (ex-message e)}))))

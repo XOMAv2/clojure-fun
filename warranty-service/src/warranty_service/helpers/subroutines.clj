@@ -7,7 +7,7 @@
     :body body})
   ([status body content-type]
    {:status status
-    :headers {"content-type" content-type}
+    :headers {"Content-Type" content-type}
     :body body}))
 
 (defn if-assoc
