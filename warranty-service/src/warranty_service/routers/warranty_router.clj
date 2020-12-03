@@ -5,8 +5,6 @@
             [warranty-service.services.warranty-service :as service]
             [warranty-service.helpers.subroutines :refer [uuid]]))
 
-(def u (java.util.UUID/fromString "4fe5d828-6444-11e8-8222-720007e40350"))
-
 (defroutes routes
   (context "/api/v1/warranty" []
     (context "/:item-uid" [item-uid]
