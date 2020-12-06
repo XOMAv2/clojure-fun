@@ -12,7 +12,7 @@
    (first (query db-spec (-> (honey/from :warranty)
                              (honey/where [:= item-uid :item_uid])
                              (honey/select :*)
-                             honey-eval)))))
+                             (honey-eval))))))
 
 (defn delete-warranty!
   "Удаление строки с указанным item-uid из таблицы warranty."
@@ -21,7 +21,7 @@
   ([db-spec item-uid]
    (execute! db-spec (-> (honey/delete-from :warranty)
                          (honey/where [:= item-uid :item_uid])
-                         honey-eval))))
+                         (honey-eval)))))
 
 (defn add-warranty!
   "Добавление строки в таблицу warranty."
@@ -40,5 +40,5 @@
                            (honey/sset (-> warranty
                                            (dissoc :id)))
                            (honey/where [:= (:id warranty) :id])
-                           honey-eval))
+                           (honey-eval)))
      '(0))))
