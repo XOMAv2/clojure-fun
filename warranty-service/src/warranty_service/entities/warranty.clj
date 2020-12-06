@@ -17,7 +17,7 @@
                                     [:status "VARCHAR(255)" :not :null]
                                     [:warranty_date :timestamp :not :null]]})
 
-(defn create-warranty-table
+(defn create-warranty-table!
   "Создание таблицы warranty, если она не существует."
   []
   (jdbc/db-do-commands *db-spec*

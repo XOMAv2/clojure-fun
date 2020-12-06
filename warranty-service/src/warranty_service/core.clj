@@ -16,7 +16,7 @@
 
 (defn -main
   [& args]
-  (create-warranty-table)
+  (create-warranty-table!)
   (run-jetty app {:host (first args)
                   :port (Integer/parseInt (second args))
                   :join? false}))
