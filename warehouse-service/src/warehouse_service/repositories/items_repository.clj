@@ -7,7 +7,7 @@
             [honeysql.helpers :as honey]))
 
 (defn add-item!
-  "Добавление строки в таблицу item."
+  "Добавление строки в таблицу items."
   ([item]
    (add-item! *db-spec* item))
   ([db-spec item]

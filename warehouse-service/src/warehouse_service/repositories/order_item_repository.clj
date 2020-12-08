@@ -1,6 +1,6 @@
 (ns warehouse-service.repositories.order-item-repository
   (:require [warehouse-service.entities.order-item :refer [*db-spec*]]
-            [clojure.java.jdbc :refer [query execute! insert!]]
+            [clojure.java.jdbc :refer [query execute!]]
             [honeysql.core :refer [format] :rename {format honey-eval}]
             [honeysql.helpers :as honey]))
 
