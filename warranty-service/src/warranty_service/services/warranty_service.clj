@@ -14,7 +14,8 @@
                             (rename-keys warranty {:item_uid :itemUid})
                             "application/json")
            (create-response 404
-                            {:message "The warranty with the specified item_uid was not found."})))
+                            {:message "The warranty with the specified item_uid was not found."}
+                            "application/json")))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn start-warranty!
@@ -65,5 +66,6 @@
                                :warrantyDate (:warranty_date warranty)}
                               "application/json"))
            (create-response 404
-                            {:message "The warranty with the specified item-uid was not found."})))
+                            {:message (str "Warranty not found for itemUid '" item-uid "'")}
+                            "application/json")))
        (catch Exception e (create-response 500 {:message (ex-message e)}))))

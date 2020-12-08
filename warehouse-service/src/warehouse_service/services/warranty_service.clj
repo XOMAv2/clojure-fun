@@ -17,13 +17,14 @@
               request {:reason reason
                        :availableCount available-count}
               path (str warranty-url "api/v1/warranty/" order-item-uid "/warranty")
-              response (client/post path {:body (json/write-str request)})
+              response (client/post path {:body (json/write-str request)
+                                          :headers {"Content-Type" "application/json"}})
               json-body (:body response)
               map-body (json/read-str json-body :key-fn keyword)]
           (create-response 200 map-body "application/json"))
-        (catch [:status 404] {:keys [status body]}
-          (create-response status (json/read-str body :key-fn keyword)))
-        (catch [:status 500] {:keys [body]}
-          (create-response 422 (json/read-str body :key-fn keyword)))
+        (catch [:status 404] {:keys [status body headers]}
+          {:status 404 :body body :headers headers})
+        (catch [:status 500] {:keys [body headers]}
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

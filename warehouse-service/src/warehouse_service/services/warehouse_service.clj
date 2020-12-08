@@ -14,7 +14,8 @@
                              :size (:size item)}
                             "application/json")
            (create-response 404
-                            {:message "The item with the specified order-item-uid was not found."})))
+                            {:message "The item with the specified order-item-uid was not found."}
+                            "application/json")))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn get-order-item
@@ -25,7 +26,8 @@
                             (rename-keys item {:available_count :availableCount})
                             "application/json")
            (create-response 404
-                            {:message "The item with the specified order-item-uid was not found."})))
+                            {:message "The item with the specified order-item-uid was not found."}
+                            "application/json")))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn take-item!
