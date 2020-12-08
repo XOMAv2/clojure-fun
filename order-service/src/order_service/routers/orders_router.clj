@@ -9,9 +9,9 @@
 (defroutes routes
   (context "/api/v1/orders/:uid" [uid]
     (GET "/" [] (orders/get-user-orders (uuid uid)))
-    (POST "/" request (order-managment/make-order! (uuid uid) request))
+    (POST "/" request (order-managment/make-order! (uuid uid) (:body request)))
     (DELETE "/" [] (order-managment/refund-order! (uuid uid)))
-    (POST "/warranty" request (order-managment/use-warranty! (uuid uid) request))
+    (POST "/warranty" request (order-managment/use-warranty! (uuid uid) (:body request)))
     (GET "/:order-uid" [order-uid] (orders/get-user-order (uuid uid) (uuid order-uid))))
   (fn [_] {:status 404}))
 

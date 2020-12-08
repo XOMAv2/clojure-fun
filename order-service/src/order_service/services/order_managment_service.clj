@@ -3,32 +3,30 @@
             [order-service.services.warehouse-service :as warehouse]
             [order-service.services.warranty-service :as warranty]
             [order-service.helpers.subroutines :refer [random-uuid
-                                                       create-response]]
+                                                       create-response
+                                                       uuid]]
             [clojure.data.json :as json])
   (:use [slingshot.slingshot :only [try+]]))
 
-(let [warehouse-response (-> (random-uuid)
-                             (warehouse/take-item! "model" "size")
-                             (:body)
-                             (json/read-str :key-fn keyword))])
-
 (defn make-order!
-  [user-uid request]
-  (try+ (let [model (:model request)
-              size (:size request)
+  [user-uid request-body]
+  (try+ (let [model (:model request-body)
+              size (:size request-body)
               order-uid (random-uuid)
               warehouse-response (-> order-uid
                                      (warehouse/take-item! model size)
                                      (:body)
                                      (json/read-str :key-fn keyword))
-              order-item-uid (:orderItemUid warehouse-response)
+              order-item-uid (-> warehouse-response
+                                 (:orderItemUid)
+                                 (uuid))
               _ (warranty/start-warranty! order-item-uid)
               _ (orders/create-order! order-uid user-uid order-item-uid)]
-          (create-response 200 {:orderUid order-uid}))
+          (create-response 200 {:orderUid order-uid} "application/json"))
         (catch [:status 404] {:keys [status body headers]}
-          {:status 404, :body body, :headers headers})
+          {:status 404 :body body :headers headers})
         (catch [:status 500] {:keys [body headers]}
-          {:status 422, :body body, :headers headers})
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
@@ -38,18 +36,20 @@
               item-uid (:item_uid order)
               _ (warehouse/return-item! item-uid)
               _ (warranty/stop-warranty! item-uid)
-              _ (orders/cancel-order! order-uid)])
+              _ (orders/cancel-order! order-uid)]
+          {:status 204})
         (catch [:status 500] {:keys [body headers]}
-          {:status 422, :body body, :headers headers})
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
 (defn use-warranty!
-  [order-uid request]
+  [order-uid request-body]
   (try+ (let [order (orders/get-order-by-order-uid order-uid)
               item-uid (:item_uid order)
-              _ (warehouse/use-warranty-item! item-uid request)])
+              warehouse-response (warehouse/use-warranty-item! item-uid request-body)]
+          warehouse-response)
         (catch [:status 500] {:keys [body headers]}
-          {:status 422, :body body, :headers headers})
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
