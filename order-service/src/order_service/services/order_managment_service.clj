@@ -32,7 +32,7 @@
 
 (defn refund-order!
   [order-uid]
-  (try+ (let [order (orders/get-order-by-order-uid order-uid)
+  (try+ (let [order (orders/get-order-by-order-uid! order-uid)
               item-uid (:item_uid order)
               _ (warehouse/return-item! item-uid)
               _ (warranty/stop-warranty! item-uid)
@@ -45,7 +45,7 @@
 
 (defn use-warranty!
   [order-uid request-body]
-  (try+ (let [order (orders/get-order-by-order-uid order-uid)
+  (try+ (let [order (orders/get-order-by-order-uid! order-uid)
               item-uid (:item_uid order)
               warehouse-response (warehouse/use-warranty-item! item-uid request-body)]
           warehouse-response)

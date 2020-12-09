@@ -4,10 +4,10 @@
             [honeysql.core :refer [format] :rename {format honey-eval}]
             [honeysql.helpers :as honey]))
 
-(defn get-warranty
+(defn get-warranty!
   "Получение строки с указанным item-uid из таблицы warranty."
   ([item-uid]
-   (get-warranty *db-spec* item-uid))
+   (get-warranty! *db-spec* item-uid))
   ([db-spec item-uid]
    (first (query db-spec (-> (honey/from :warranty)
                              (honey/where [:= item-uid :item_uid])
@@ -35,7 +35,7 @@
   ([item-uid warranty]
    (update-warranty! *db-spec* item-uid warranty))
   ([db-spec item-uid warranty]
-   (if (not= nil (get-warranty db-spec item-uid))
+   (if (not= nil (get-warranty! db-spec item-uid))
      (execute! db-spec (-> (honey/update :warranty)
                            (honey/sset (-> warranty
                                            (dissoc :id)))

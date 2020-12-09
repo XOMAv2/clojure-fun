@@ -12,20 +12,20 @@
   ([db-spec order]
    (first (insert! db-spec :orders order))))
 
-(defn get-order-by-order-uid
+(defn get-order-by-order-uid!
   ([order-uid]
-   (get-order-by-order-uid *db-spec* order-uid))
+   (get-order-by-order-uid! *db-spec* order-uid))
   ([db-spec order-uid]
    (first (query db-spec (-> (honey/from :orders)
                              (honey/where [:= order-uid :order_uid])
                              (honey/select :*)
                              (honey-eval))))))
 
-(defn get-order-by-user-uid-and-order-uid
+(defn get-order-by-user-uid-and-order-uid!
   ([user-uid order-uid]
-   (get-order-by-user-uid-and-order-uid *db-spec*
-                                        user-uid
-                                        order-uid))
+   (get-order-by-user-uid-and-order-uid! *db-spec*
+                                         user-uid
+                                         order-uid))
   ([db-spec user-uid order-uid]
    (first (query db-spec (-> (honey/from :orders)
                              (honey/where [:= user-uid :user_uid]
@@ -33,9 +33,9 @@
                              (honey/select :*)
                              (honey-eval))))))
 
-(defn get-orders-by-user-uid
+(defn get-orders-by-user-uid!
   ([user-uid]
-   (get-orders-by-user-uid *db-spec* user-uid))
+   (get-orders-by-user-uid! *db-spec* user-uid))
   ([db-spec user-uid]
    (query db-spec (-> (honey/from :orders)
                       (honey/where [:= user-uid :user_uid])

@@ -5,9 +5,9 @@
                                                            random-uuid]])
   (:use [clojure.set :only [rename-keys]]))
 
-(defn get-item-info
+(defn get-item-info!
   [order-item-uid]
-  (try (let [item (i-rep/get-item-by-order-item-uid order-item-uid)]
+  (try (let [item (i-rep/get-item-by-order-item-uid! order-item-uid)]
          (if item
            (create-response 200
                             {:model (:model item)
@@ -18,9 +18,9 @@
                             "application/json")))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
-(defn get-order-item
+(defn get-order-item!
   [order-item-uid]
-  (try (let [item (i-rep/get-item-by-order-item-uid order-item-uid)]
+  (try (let [item (i-rep/get-item-by-order-item-uid! order-item-uid)]
          (if item
            (create-response 200
                             (rename-keys item {:available_count :availableCount})
@@ -35,7 +35,7 @@
   (try (let [model (:model request)
              size (:size request)
              order-uid (:orderUid request)
-             item (i-rep/get-item-by-model-and-size model size)]
+             item (i-rep/get-item-by-model-and-size! model size)]
          (if (= item nil)
            (create-response 404 {:message "Requested item not found"})
            (if (< (:available_count item) 1)
@@ -63,6 +63,6 @@
 
 (defn check-item-available-count
   [order-item-uid]
-  (try (let [item (i-rep/get-item-by-order-item-uid order-item-uid)]
+  (try (let [item (i-rep/get-item-by-order-item-uid! order-item-uid)]
          (:available_count item))
        (catch Exception e (create-response 500 {:message (ex-message e)}))))

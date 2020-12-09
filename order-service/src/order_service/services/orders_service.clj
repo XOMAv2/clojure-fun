@@ -3,10 +3,10 @@
             [order-service.helpers.subroutines :refer [create-response]]
             [java-time :as time]))
 
-(defn get-user-order
+(defn get-user-order!
   [user-uid order-uid]
-  (try (let [order (rep/get-order-by-user-uid-and-order-uid user-uid
-                                                            order-uid)]
+  (try (let [order (rep/get-order-by-user-uid-and-order-uid! user-uid
+                                                             order-uid)]
          (if order
            (create-response 200
                             {:orderUid (:order_uid order)
@@ -18,9 +18,9 @@
                             {:message "The order with the specified user-uid and order-uid was not found."})))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
-(defn get-user-orders
+(defn get-user-orders!
   [user-uid]
-  (try (let [orders (rep/get-orders-by-user-uid user-uid)]
+  (try (let [orders (rep/get-orders-by-user-uid! user-uid)]
          (create-response 200
                           (vec (map (fn [order] {:orderUid (:order_uid order)
                                                  :itemUid (:item_uid order)
@@ -30,9 +30,9 @@
                           "application/json"))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
-(defn get-order-by-order-uid
+(defn get-order-by-order-uid!
   [order-uid]
-  (let [order (rep/get-order-by-order-uid order-uid)]
+  (let [order (rep/get-order-by-order-uid! order-uid)]
     (if (nil? order)
       (throw (Exception. "The order with the specified order-uid was not found."))
       order)))
@@ -49,8 +49,8 @@
   [order-uid]
   (rep/delete-order! order-uid))
 
-(defn check-order
+(defn order-exists?
   [order-uid]
   (-> order-uid
-      (rep/get-order-by-order-uid)
+      (rep/get-order-by-order-uid!)
       (not= nil)))

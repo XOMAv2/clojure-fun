@@ -1,6 +1,6 @@
 (ns warehouse-service.repositories.items-repository
   (:require [warehouse-service.entities.items :refer [*db-spec*]]
-            [warehouse-service.repositories.order-item-repository :refer [get-item-id-by-order-item-uid]]
+            [warehouse-service.repositories.order-item-repository :refer [get-item-id-by-order-item-uid!]]
             [clojure.java.jdbc :refer [query execute! insert!]]
             [honeysql.core :refer [format call] :rename {format honey-eval
                                                          call honey-call}]
@@ -13,20 +13,20 @@
   ([db-spec item]
    (first (insert! db-spec :items item))))
 
-(defn get-item-by-order-item-uid
+(defn get-item-by-order-item-uid!
   ([order-item-uid]
-   (get-item-by-order-item-uid *db-spec* order-item-uid))
+   (get-item-by-order-item-uid! *db-spec* order-item-uid))
   ([db-spec order-item-uid]
-   (let [item-id (get-item-id-by-order-item-uid order-item-uid)]
+   (let [item-id (get-item-id-by-order-item-uid! order-item-uid)]
      (when (not= item-id nil)
        (first (query db-spec (-> (honey/from :items)
                                  (honey/where [:= item-id :id])
                                  (honey/select :*)
                                  (honey-eval))))))))
 
-(defn get-item-by-model-and-size
+(defn get-item-by-model-and-size!
   ([model size]
-   (get-item-by-model-and-size *db-spec* model size))
+   (get-item-by-model-and-size! *db-spec* model size))
   ([db-spec model size]
    (first (query db-spec (-> (honey/from :items)
                              (honey/where [:= model :model]
@@ -50,7 +50,7 @@
   ([order-item-uid]
    (return-one-item! *db-spec* order-item-uid))
   ([db-spec order-item-uid]
-   (let [item-id (get-item-id-by-order-item-uid order-item-uid)]
+   (let [item-id (get-item-id-by-order-item-uid! order-item-uid)]
      (when (not= item-id nil)
        (execute! db-spec (-> (honey/update :items)
                              (honey/sset {:available_count (honey-call :+ :available_count 1)})

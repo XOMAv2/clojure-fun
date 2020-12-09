@@ -12,7 +12,7 @@
                                                 (:body)
                                                 (#(assoc % :orderUid (uuid (:orderUid %)))))))
     (context "/:item-uid" [item-uid]
-      (GET "/" [] (warehouse/get-item-info (uuid item-uid)))
+      (GET "/" [] (warehouse/get-item-info! (uuid item-uid)))
       (DELETE "/" [] (warehouse/return-item! (uuid item-uid)))
       (POST "/warranty" request (warranty/warranty-request! (uuid item-uid)
                                                             (-> request

@@ -8,7 +8,7 @@
 (defroutes routes
   (context "/api/v1/warranty" []
     (context "/:item-uid" [item-uid]
-      (GET "/" [] (service/get-warranty (uuid item-uid)))
+      (GET "/" [] (service/get-warranty! (uuid item-uid)))
       (POST "/" [] (service/start-warranty! (uuid item-uid)))
       (DELETE "/" [] (service/close-warranty! (uuid item-uid)))
       (POST "/warranty" request (service/warranty-decision! (uuid item-uid) (:body request)))))

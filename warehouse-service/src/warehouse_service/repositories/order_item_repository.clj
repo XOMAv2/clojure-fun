@@ -4,9 +4,9 @@
             [honeysql.core :refer [format] :rename {format honey-eval}]
             [honeysql.helpers :as honey]))
 
-(defn get-item-id-by-order-item-uid
+(defn get-item-id-by-order-item-uid!
   ([order-item-uid]
-   (get-item-id-by-order-item-uid *db-spec* order-item-uid))
+   (get-item-id-by-order-item-uid! *db-spec* order-item-uid))
   ([db-spec order-item-uid]
    (let [result-map (first (query db-spec (-> (honey/from :order_item)
                                               (honey/where [:= order-item-uid :order_item_uid])

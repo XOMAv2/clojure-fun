@@ -18,11 +18,11 @@
         item3 {:available_count 1000
                :model "Lego 42070"
                :size "L"}]
-    (when (not (rep/get-item-by-model-and-size (:model item1) (:size item1)))
+    (when (not (rep/get-item-by-model-and-size! (:model item1) (:size item1)))
       (rep/add-item! item1))
-    (when (not (rep/get-item-by-model-and-size (:model item2) (:size item2)))
+    (when (not (rep/get-item-by-model-and-size! (:model item2) (:size item2)))
       (rep/add-item! item2))
-    (when (not (rep/get-item-by-model-and-size (:model item3) (:size item3)))
+    (when (not (rep/get-item-by-model-and-size! (:model item3) (:size item3)))
       (rep/add-item! item3))))
 
 ; Middleware выполняются снизу вверх для запроса и сверху вниз для ответа.

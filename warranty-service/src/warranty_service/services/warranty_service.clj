@@ -5,10 +5,10 @@
             [java-time :as time])
   (:use [clojure.set :only [rename-keys]]))
 
-(defn get-warranty
+(defn get-warranty!
   "Получение строки с указанным item-uid из таблицы warranty через репозиторий."
   [item-uid]
-  (try (let [warranty (rep/get-warranty item-uid)]
+  (try (let [warranty (rep/get-warranty! item-uid)]
          (if warranty
            (create-response 200
                             (rename-keys warranty {:item_uid :itemUid})
@@ -41,7 +41,7 @@
 (defn warranty-decision!
   "Запрос решения по гарантии."
   [item-uid request]
-  (try (let [warranty (rep/get-warranty item-uid)]
+  (try (let [warranty (rep/get-warranty! item-uid)]
          (if warranty
            (let [local-date-time (-> warranty
                                      (:warranty_date)
