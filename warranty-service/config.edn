@@ -1,4 +1,4 @@
-{:env-type :local
+{:env-type :heroku
  :env {:local {:db-spec {:dbtype "postgresql"
                          :dbname "rsoi-lab02"
                          :host "localhost"

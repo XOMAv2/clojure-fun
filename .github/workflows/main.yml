@@ -7,6 +7,22 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Build Warranty Service
+        working-directory: ./warranty-service
+        run: lein uberjar
+
+      - name: Build Warehouse Service
+        working-directory: ./warehouse-service
+        run: lein uberjar
+
+      - name: Build Order Service
+        working-directory: ./order-service
+        run: lein uberjar
+
+      - name: Build Store Service
+        working-directory: ./store-service
+        run: lein uberjar
+
       - name: Deploy Warranty Service
         working-directory: ./warranty-service
         env:
