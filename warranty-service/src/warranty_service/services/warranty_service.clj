@@ -11,7 +11,9 @@
   (try (let [warranty (rep/get-warranty! item-uid)]
          (if warranty
            (create-response 200
-                            (rename-keys warranty {:item_uid :itemUid})
+                            (rename-keys warranty {:item_uid :itemUid
+                                                   :warranty_date :warrantyDate
+                                                   :status :warrantyStatus})
                             "application/json")
            (create-response 404
                             {:message "The warranty with the specified item_uid was not found."}
@@ -46,7 +48,7 @@
            (let [local-date-time (-> warranty
                                      (:warranty_date)
                                      (sql-timestamp-to-local-date-time))
-                 warranty-local (assoc warranty :warranty_date local-date-time)                 
+                 warranty-local (assoc warranty :warranty_date local-date-time)
                  decision (cond
                             (and (active-warranty? warranty-local)
                                  (= (:status warranty) "ON_WARRANTY")

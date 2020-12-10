@@ -11,13 +11,16 @@
 (def store-url (let [config (load-env)
                      env-type (:env-type config)
                      env (env-type (:env config))]
-                  (:service-url env)))
+                 (:service-url env)))
 
 (defn find-user-orders!
   [user-uid]
   (try+
    (if (users/user-exists? user-uid)
-     (let [user-orders (orders/get-order-info-by-user-uid! user-uid)
+     (let [user-orders (-> user-uid
+                           (orders/get-order-info-by-user-uid!)
+                           (:body)
+                           (json/read-str :key-fn keyword))
            orders (map (fn [order-info]
                          (let [order-uid (:orderUid order-info)
                                item-uid (:itemUid order-info)
@@ -54,27 +57,29 @@
   [user-uid order-uid]
   (try+
    (if (users/user-exists? user-uid)
-     (let [order-info (orders/get-order-info! user-uid order-uid)
-           order-response {:orderUid order-uid
-                           :date (:orderDate order-info)}
-           item-uid (:itemUid order-info)
+     (let [order-response (orders/get-order-info! user-uid order-uid)
+           order-body (json/read-str (:body order-response)
+                                     :key-fn keyword)
+           response {:orderUid order-uid
+                     :date (:orderDate order-body)}
+           item-uid (:itemUid order-body)
            warehouse-response (warehouse/get-item-info! item-uid)
            warehouse-body (json/read-str (:body warehouse-response)
                                          :key-fn keyword)
-           order-response (if (empty? warehouse-body)
-                            order-response
-                            (-> order-response
-                                (assoc :model (:model warehouse-body))
-                                (assoc :size (:size warehouse-body))))
+           response (if (empty? warehouse-body)
+                      response
+                      (-> response
+                          (assoc :model (:model warehouse-body))
+                          (assoc :size (:size warehouse-body))))
            warranty-response (warranty/get-item-warranty-info! item-uid)
            warranty-body (json/read-str (:body warranty-response)
                                         :key-fn keyword)
-           order-response (if (empty? warranty-body)
-                            order-response
-                            (-> order-response
-                                (assoc :warrantyDate (:warrantyDate warranty-body))
-                                (assoc :warrantyStatus (:warrantyStatus warranty-body))))]
-       (create-response 200 order-response "application/json"))
+           response (if (empty? warranty-body)
+                      response
+                      (-> response
+                          (assoc :warrantyDate (:warrantyDate warranty-body))
+                          (assoc :warrantyStatus (:warrantyStatus warranty-body))))]
+       (create-response 200 response "application/json"))
      (create-response 404 {:message "User not found"} "application/json"))
    (catch [:status 404] {:keys [status body headers]}
      {:status 404 :body body :headers headers})
@@ -91,9 +96,11 @@
            body (json/read-str (:body response)
                                :key-fn keyword)]
        {:status 201
-        :headers {"location" (format "%spersons/%d"
-                                     store-url
-                                     (:orderUid body))}})
+        :headers {"location" (str store-url
+                                  "api/v1/store/"
+                                  user-uid
+                                  "/"
+                                  (:orderUid body))}})
      (create-response 404 {:message "User not found"} "application/json"))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
