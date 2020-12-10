@@ -6,8 +6,47 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # TODO Build projects
-      # TODO deploy to Heroku
+
+      - name: Deploy Warranty Service
+        working-directory: ./warranty-service
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: lab2-xomav2-warranty-service
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:release web -a $APP_NAME
+
+      - name: Deploy Warehouse Service
+        working-directory: ./warehouse-service
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: lab2-xomav2-warehouse-service
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:release web -a $APP_NAME
+
+      - name: Deploy Order Service
+        working-directory: ./order-srvice
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: lab2-xomav2-order-service
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:release web -a $APP_NAME
+
+      - name: Deploy Store Service
+        working-directory: ./store-service
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: lab2-xomav2-store-service
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:release web -a $APP_NAME
+
       - name: Run API Tests
         id: run-newman
         uses: anthonyvscode/newman-action@v1
