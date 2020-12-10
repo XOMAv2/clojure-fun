@@ -30,7 +30,7 @@ jobs:
           APP_NAME: lab2-xomav2-warranty-service
         run: |
           docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:push web -a $APP_NAME
           heroku container:release web -a $APP_NAME
 
       - name: Deploy Warehouse Service
@@ -40,7 +40,7 @@ jobs:
           APP_NAME: lab2-xomav2-warehouse-service
         run: |
           docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:push web -a $APP_NAME
           heroku container:release web -a $APP_NAME
 
       - name: Deploy Order Service
@@ -50,7 +50,7 @@ jobs:
           APP_NAME: lab2-xomav2-order-service
         run: |
           docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:push web -a $APP_NAME
           heroku container:release web -a $APP_NAME
 
       - name: Deploy Store Service
@@ -60,7 +60,7 @@ jobs:
           APP_NAME: lab2-xomav2-store-service
         run: |
           docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
-          heroku container:push web -a $APP_NAME --context-path ..
+          heroku container:push web -a $APP_NAME
           heroku container:release web -a $APP_NAME
 
       - name: Run API Tests
