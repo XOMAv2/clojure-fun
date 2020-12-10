@@ -28,7 +28,7 @@ jobs:
           heroku container:release web -a $APP_NAME
 
       - name: Deploy Order Service
-        working-directory: ./order-srvice
+        working-directory: ./order-service
         env:
           HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
           APP_NAME: lab2-xomav2-order-service
