@@ -8,12 +8,12 @@
                :warranty-url "http://localhost:8180/"
                :warehouse-url "http://localhost:8280/"}
        :heroku {:db-spec {:dbtype "postgresql"
-                          :host "ec2-54-228-209-117.eu-west-1.compute.amazonaws.com"
-                          :dbname "d43c9jsi8skn0"
-                          :user "ovwbfiwkmflpyc"
+                          :host "ec2-79-125-86-58.eu-west-1.compute.amazonaws.com"
+                          :dbname "dbd82ke8pdks5k"
+                          :user "aebaxwnoiofwxs"
                           :port 5432
-                          :password "6e3710f29fc66578b93d427e65109cb1436aae5844e8027db577a842cfe78ad9"
-                          :uri "postgres://ovwbfiwkmflpyc:6e3710f29fc66578b93d427e65109cb1436aae5844e8027db577a842cfe78ad9@ec2-54-228-209-117.eu-west-1.compute.amazonaws.com:5432/d43c9jsi8skn0"}
+                          :password "1a3b7d11658342061d4f08b133ebd229105f37d921207adcdc6375b96b41e56e"
+                          :uri "postgres://aebaxwnoiofwxs:1a3b7d11658342061d4f08b133ebd229105f37d921207adcdc6375b96b41e56e@ec2-79-125-86-58.eu-west-1.compute.amazonaws.com:5432/dbd82ke8pdks5k"}
                 :service-url "https://lab2-xomav2-order-service.herokuapp.com/"
                 :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"
                 :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"}}}
