@@ -2,7 +2,7 @@
   (:require [clj-http.client :as client]
             [config.core :refer [load-env]]
             [clojure.data.json :as json]
-            [order-service.helpers.subroutines :refer [json-write-uuid]]))
+            [common-functions.uuid :refer [json-write-uuid]]))
 
 (def warehouse-url (let [config (load-env)
                          env-type (:env-type config)

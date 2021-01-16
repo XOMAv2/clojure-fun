@@ -2,7 +2,8 @@
   (:require [store-service.entities.users :refer [create-users-table!]]
             [store-service.repositories.users-repository :as rep]
             [ring.adapter.jetty :refer [run-jetty]]
-            [store-service.helpers.subroutines :refer [uuid remove-utf-8-from-header]]
+            [common-functions.uuid :refer [uuid]]
+            [common-functions.middlewares :refer [remove-utf-8-from-header]]
             [store-service.routers.users-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))

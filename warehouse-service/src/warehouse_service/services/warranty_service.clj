@@ -3,7 +3,7 @@
              [clojure.data.json :as json]
              [config.core :refer [load-env]]
              [warehouse-service.services.warehouse-service :as warehouse]
-             [warehouse-service.helpers.subroutines :refer [create-response]])
+             [common-functions.helpers :refer [create-response]])
   (:use [slingshot.slingshot :only [try+]]))
 
 (def warranty-url (let [config (load-env)

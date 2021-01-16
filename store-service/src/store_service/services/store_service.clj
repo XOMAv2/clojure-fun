@@ -5,7 +5,7 @@
             [config.core :refer [load-env]]
             [store-service.services.warehouse-service :as warehouse]
             [store-service.services.warranty-service :as warranty]
-            [store-service.helpers.subroutines :refer [create-response]])
+            [common-functions.helpers :refer [create-response]])
   (:use [slingshot.slingshot :only [try+]]))
 
 (def store-url (let [config (load-env)

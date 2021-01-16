@@ -2,9 +2,8 @@
   (:require [order-service.services.orders-service :as orders]
             [order-service.services.warehouse-service :as warehouse]
             [order-service.services.warranty-service :as warranty]
-            [order-service.helpers.subroutines :refer [random-uuid
-                                                       create-response
-                                                       uuid]]
+            [common-functions.uuid :refer [uuid random-uuid]]
+            [common-functions.helpers :refer [create-response]]
             [clojure.data.json :as json])
   (:use [slingshot.slingshot :only [try+]]))
 

@@ -7,6 +7,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Build Common Functions Library
+        working-directory: ./common-functions
+        run: |
+          lein pom
+          lein jar
+          lein install
+
       - name: Build Warranty Service
         working-directory: ./warranty-service
         run: lein uberjar

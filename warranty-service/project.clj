@@ -9,6 +9,7 @@
                  [org.postgresql/postgresql "42.2.18.jre7"]
                  [honeysql "1.0.444"]
                  [clojure.java-time "0.3.2"]
+                 [common-functions "0.1.0-SNAPSHOT"]
                  [compojure "1.6.1"]
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]

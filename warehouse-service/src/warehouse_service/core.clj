@@ -4,7 +4,7 @@
             [ring.adapter.jetty :refer [run-jetty]]
             [warehouse-service.repositories.items-repository :as rep]
             [warehouse-service.routers.warehouse-router :refer [router] :rename {router app-naked}]
-            [warehouse-service.helpers.subroutines :refer [remove-utf-8-from-header]]
+            [common-functions.middlewares :refer [remove-utf-8-from-header]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))
 

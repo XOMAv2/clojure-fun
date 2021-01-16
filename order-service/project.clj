@@ -9,6 +9,7 @@
                  [org.postgresql/postgresql "42.2.18.jre7"]
                  [honeysql "1.0.444"]
                  [clj-http "3.10.3"]
+                 [common-functions "0.1.0-SNAPSHOT"]
                  [clojure.java-time "0.3.2"]
                  [org.clojure/data.json "1.0.0"]
                  [compojure "1.6.1"]

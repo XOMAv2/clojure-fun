@@ -1,8 +1,8 @@
 (ns warehouse-service.services.warehouse-service
   (:require [warehouse-service.repositories.items-repository :as i-rep]
             [warehouse-service.repositories.order-item-repository :as oi-rep]
-            [warehouse-service.helpers.subroutines :refer [create-response
-                                                           random-uuid]])
+            [common-functions.helpers :refer [create-response]]
+            [common-functions.uuid :refer [random-uuid]])
   (:use [clojure.set :only [rename-keys]]))
 
 (defn get-item-info!

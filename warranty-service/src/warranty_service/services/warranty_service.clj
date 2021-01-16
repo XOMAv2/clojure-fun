@@ -1,7 +1,7 @@
 (ns warranty-service.services.warranty-service
   (:require [warranty-service.repositories.warranty-repository :as rep]
-            [warranty-service.helpers.subroutines :refer [create-response
-                                                          sql-timestamp-to-local-date-time]]
+            [common-functions.helpers :refer [create-response]]
+            [common-functions.time :refer [sql-timestamp-to-local-date-time]]
             [java-time :as time])
   (:use [clojure.set :only [rename-keys]]))
 

@@ -10,6 +10,7 @@
                  [honeysql "1.0.444"]
                  [clj-http "3.10.3"]
                  [clojure.java-time "0.3.2"]
+                 [common-functions "0.1.0-SNAPSHOT"]
                  [org.clojure/data.json "1.0.0"]
                  [compojure "1.6.1"]
                  [slingshot "0.12.2"]
