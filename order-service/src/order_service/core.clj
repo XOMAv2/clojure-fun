@@ -1,5 +1,6 @@
 (ns order-service.core
-  (:require [order-service.entities.orders :refer [create-orders-table!]]
+  (:require [order-service.entities.orders :refer [*db-spec* orders-table-spec]]
+            [common-functions.db :refer [create-table-if-not-exists!]]
             [ring.adapter.jetty :refer [run-jetty]]
             [order-service.routers.orders-router :refer [router] :rename {router app-naked}]
             [common-functions.middlewares :refer [remove-utf-8-from-header]]
@@ -17,7 +18,7 @@
 
 (defn -main
   [& args]
-  (create-orders-table!)
+  (create-table-if-not-exists! *db-spec* orders-table-spec)
   (run-jetty app {:host (first args)
                   :port (Integer/parseInt (second args))
                   :join? false}))

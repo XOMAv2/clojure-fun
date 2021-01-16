@@ -1,6 +1,5 @@
 (ns warehouse-service.entities.order-item
-  (:require [clojure.java.jdbc :as jdbc]
-            [config.core :refer [load-env]]))
+  (:require [config.core :refer [load-env]]))
 
 (def ^:dynamic *db-spec*
   "Ассоциативный массив для подключения к бд с возможностью
@@ -16,12 +15,3 @@
                                       [:order_item_uid :uuid :not :null :unique]
                                       [:order_uid :uuid :not :null]
                                       [:item_id :int "CONSTRAINT fk_order_item_item_id REFERENCES items"]]})
-
-(defn create-order-item-table!
-  "Создание таблицы order-item, если она не существует."
-  []
-  (jdbc/db-do-commands *db-spec*
-                       (jdbc/create-table-ddl (:name order-item-table-spec)
-                                              (:columns order-item-table-spec)
-                                              ; IF NOT EXISTS
-                                              {:conditional? true})))

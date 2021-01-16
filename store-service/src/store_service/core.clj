@@ -1,5 +1,6 @@
 (ns store-service.core
-  (:require [store-service.entities.users :refer [create-users-table!]]
+  (:require [store-service.entities.users :refer [*db-spec* users-table-spec]]
+            [common-functions.db :refer [create-table-if-not-exists!]]
             [store-service.repositories.users-repository :as rep]
             [ring.adapter.jetty :refer [run-jetty]]
             [common-functions.uuid :refer [uuid]]
@@ -26,7 +27,7 @@
 
 (defn -main
   [& args]
-  (create-users-table!)
+  (create-table-if-not-exists! *db-spec* users-table-spec)
   (add-test-data!)
   (run-jetty app {:host (first args)
                   :port (Integer/parseInt (second args))

@@ -1,6 +1,5 @@
 (ns warranty-service.entities.warranty
-  (:require [clojure.java.jdbc :as jdbc]
-            [config.core :refer [load-env]]))
+  (:require [config.core :refer [load-env]]))
 
 (def ^:dynamic *db-spec*
   "Ассоциативный массив для подключения к бд с возможностью
@@ -16,12 +15,3 @@
                                     [:item_uid :uuid :not :null :unique]
                                     [:status "VARCHAR(255)" :not :null]
                                     [:warranty_date :timestamp :not :null]]})
-
-(defn create-warranty-table!
-  "Создание таблицы warranty, если она не существует."
-  []
-  (jdbc/db-do-commands *db-spec*
-                       (jdbc/create-table-ddl (:name warranty-table-spec)
-                                              (:columns warranty-table-spec)
-                                              ; IF NOT EXISTS
-                                              {:conditional? true})))

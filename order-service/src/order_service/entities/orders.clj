@@ -1,6 +1,5 @@
 (ns order-service.entities.orders
-  (:require [clojure.java.jdbc :as jdbc]
-            [config.core :refer [load-env]]))
+  (:require [config.core :refer [load-env]]))
 
 (def ^:dynamic *db-spec*
   "Ассоциативный массив для подключения к бд с возможностью
@@ -17,12 +16,3 @@
                                  [:order_uid :uuid :not :null :unique]
                                  [:status "VARCHAR(255)" :not :null]
                                  [:user_uid :uuid :not :null]]})
-
-(defn create-orders-table!
-  "Создание таблицы orders, если она не существует."
-  []
-  (jdbc/db-do-commands *db-spec*
-                       (jdbc/create-table-ddl (:name orders-table-spec)
-                                              (:columns orders-table-spec)
-                                              ; IF NOT EXISTS
-                                              {:conditional? true})))

@@ -3,7 +3,8 @@
             [warranty-service.routers.warranty-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [common-functions.middlewares :refer [remove-utf-8-from-header]]
-            [warranty-service.entities.warranty :refer [create-warranty-table!]])
+            [warranty-service.entities.warranty :refer [*db-spec* warranty-table-spec]]
+            [common-functions.db :refer [create-table-if-not-exists!]])
   (:gen-class))
 
 ; Middleware выполняются снизу вверх для запроса и сверху вниз для ответа.
@@ -18,7 +19,7 @@
 
 (defn -main
   [& args]
-  (create-warranty-table!)
+  (create-table-if-not-exists! *db-spec* warranty-table-spec)
   (run-jetty app {:host (first args)
                   :port (Integer/parseInt (second args))
                   :join? false}))

@@ -1,6 +1,11 @@
 (ns warehouse-service.core
-  (:require [warehouse-service.entities.items :refer [create-items-table!]]
-            [warehouse-service.entities.order-item :refer [create-order-item-table!]]
+  (:require [warehouse-service.entities.items
+             :refer [*db-spec* items-table-spec]
+             :rename {*db-spec* *items-db-spec*}]
+            [warehouse-service.entities.order-item
+             :refer [*db-spec* order-item-table-spec]
+             :rename {*db-spec* *order-item-db-spec*}]
+            [common-functions.db :refer [create-table-if-not-exists!]]
             [ring.adapter.jetty :refer [run-jetty]]
             [warehouse-service.repositories.items-repository :as rep]
             [warehouse-service.routers.warehouse-router :refer [router] :rename {router app-naked}]
@@ -37,9 +42,9 @@
 
 (defn -main
   [& args]
-  (create-items-table!)
+  (create-table-if-not-exists! *items-db-spec* items-table-spec)
   (add-test-data!)
-  (create-order-item-table!)
+  (create-table-if-not-exists! *order-item-db-spec* order-item-table-spec)
   (run-jetty app {:host (first args)
                   :port (Integer/parseInt (second args))
                   :join? false}))
