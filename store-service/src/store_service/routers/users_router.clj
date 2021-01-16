@@ -8,12 +8,12 @@
 (defroutes routes
   (context "/api/v1/store/:user-uid" [user-uid :<< as-uuid]
     (GET "/orders" [] (service/find-user-orders! user-uid))
-    (POST "/purchase" request (service/make-purchase! user-uid (:body request)))
+    (POST "/purchase" {:keys [body]} (service/make-purchase! user-uid body))
     (context "/:order-uid" [order-uid :<< as-uuid]
       (GET "/" [] (service/find-user-order! user-uid order-uid))
-      (POST "/warranty" request (service/warranty-request! user-uid
+      (POST "/warranty" {:keys [body]} (service/warranty-request! user-uid
                                                            order-uid
-                                                           (:body request)))
+                                                           body))
       (DELETE "/refund" [] (service/refund-purchase! user-uid order-uid))))
   (fn [_] {:status 404}))
 

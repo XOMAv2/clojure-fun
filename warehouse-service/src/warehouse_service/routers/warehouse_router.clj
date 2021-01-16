@@ -8,16 +8,11 @@
 
 (defroutes routes
   (context "/api/v1/warehouse" []
-    (POST "/" request (warehouse/take-item! (-> request
-                                                (:body)
-                                                (#(assoc % :orderUid (as-uuid (:orderUid %)))))))
+    (POST "/" {:keys [body]} (warehouse/take-item! (update body :orderUid as-uuid)))
     (context "/:item-uid" [item-uid :<< as-uuid]
       (GET "/" [] (warehouse/get-item-info! item-uid))
       (DELETE "/" [] (warehouse/return-item! item-uid))
-      (POST "/warranty" request (warranty/warranty-request! item-uid
-                                                            (-> request
-                                                                (:body)
-                                                                (:reason))))))
+      (POST "/warranty" {:keys [body]} (warranty/warranty-request! item-uid (:reason body)))))
   (fn [_] {:status 404}))
 
 (def router (handler/api routes))
