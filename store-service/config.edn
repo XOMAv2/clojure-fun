@@ -5,10 +5,10 @@
                          :port 5432
                          :user "postgres"
                          :password "123"}
-               :service-url "http://localhost:8480/"
                :warranty-url "http://localhost:8180/"
                :warehouse-url "http://localhost:8280/"
-               :orders-url "http://localhost:8380/"}
+               :orders-url "http://localhost:8380/"
+               :store-url "http://localhost:8480/"}
        :heroku {:db-spec {:dbtype "postgresql"
                           :host "ec2-176-34-114-78.eu-west-1.compute.amazonaws.com"
                           :dbname "d2a7gmjtde2dmn"
@@ -16,9 +16,9 @@
                           :port 5432
                           :password "33c167f634c5a3bfb8cf08122fc8fc501a6dbeefe8e385e35efc40d92d06b24d"
                           :uri "postgres://fdmxfhywvjukbc:33c167f634c5a3bfb8cf08122fc8fc501a6dbeefe8e385e35efc40d92d06b24d@ec2-176-34-114-78.eu-west-1.compute.amazonaws.com:5432/d2a7gmjtde2dmn"}
-                :service-url "https://lab2-xomav2-store-service.herokuapp.com/"
                 :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"
                 :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"
-                :orders-url "https://lab2-xomav2-order-service.herokuapp.com/"}}}
+                :orders-url "https://lab2-xomav2-order-service.herokuapp.com/"
+                :store-url "https://lab2-xomav2-store-service.herokuapp.com/"}}}
 
 

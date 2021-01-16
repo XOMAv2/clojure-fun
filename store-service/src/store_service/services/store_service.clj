@@ -11,7 +11,7 @@
 (def store-url (let [config (load-env)
                      env-type (:env-type config)
                      env (env-type (:env config))]
-                 (:service-url env)))
+                 (:store-url env)))
 
 (defn find-user-orders!
   [user-uid]
