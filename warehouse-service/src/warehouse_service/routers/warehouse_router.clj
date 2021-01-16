@@ -3,16 +3,37 @@
                                     defroutes context]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
+            [clojure.spec.alpha :as s]
+            [common-functions.helpers :refer [validate-and-handle]]
             [warehouse-service.services.warehouse-service :as warehouse]
             [warehouse-service.services.warranty-service :as warranty]))
 
+(s/def ::reason string?)
+
+(s/def ::request-item-warranty (s/keys :req-un [::reason]))
+
+(def ^:private uuid-pattern
+  #"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+(s/def ::orderUid (s/and string? #(re-matches uuid-pattern %)))
+(s/def ::model string?)
+(s/def ::size string?)
+
+(s/def ::take-item-from-warehouse (s/keys :req-un [::orderUid
+                                                   ::model
+                                                   ::size]))
+
 (defroutes routes
   (context "/api/v1/warehouse" []
-    (POST "/" {:keys [body]} (warehouse/take-item! (update body :orderUid as-uuid)))
+    (POST "/" {:keys [body]} (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
+                                                  [::take-item-from-warehouse body]))
     (context "/:item-uid" [item-uid :<< as-uuid]
-      (GET "/" [] (warehouse/get-item-info! item-uid))
-      (DELETE "/" [] (warehouse/return-item! item-uid))
-      (POST "/warranty" {:keys [body]} (warranty/warranty-request! item-uid (:reason body)))))
+      (GET "/" [] (validate-and-handle warehouse/get-item-info!
+                                       [uuid? item-uid]))
+      (DELETE "/" [] (validate-and-handle warehouse/return-item!
+                                          [uuid? item-uid]))
+      (POST "/warranty" {:keys [body]} (validate-and-handle #(warranty/warranty-request! % (:reason %2))
+                                                            [uuid? item-uid]
+                                                            [::request-item-warranty body]))))
   (fn [_] {:status 404}))
 
 (def router (handler/api routes))
