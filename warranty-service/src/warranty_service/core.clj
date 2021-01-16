@@ -2,6 +2,7 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [warranty-service.routers.warranty-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
+            [warranty-service.helpers.subroutines :refer [remove-utf-8-from-header]]
             [warranty-service.entities.warranty :refer [create-warranty-table!]])
   (:gen-class))
 
@@ -11,6 +12,7 @@
       ; Преобразует тело ответа в JSON.
       (wrap-json-response)
       ;(wrap-validate-body)
+      (remove-utf-8-from-header)
       ; Преобразует тело запроса в словарь с ключами кейвордами.
       (wrap-json-body {:keywords? true})))
 

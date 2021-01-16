@@ -44,8 +44,8 @@
                                            (assoc :warrantyStatus (:warrantyStatus warranty-body))))]
                            order))
                        user-orders)]
-       (create-response 200 orders "application/json"))
-     (create-response 404 {:message "User not found"} "application/json"))
+       (create-response 200 orders))
+     (create-response 404 {:message "User not found"}))
    (catch [:status 404] {:keys [status body headers]}
      {:status 404 :body body :headers headers})
    (catch [:status 500] {:keys [body headers]}
@@ -79,8 +79,8 @@
                       (-> response
                           (assoc :warrantyDate (:warrantyDate warranty-body))
                           (assoc :warrantyStatus (:warrantyStatus warranty-body))))]
-       (create-response 200 response "application/json"))
-     (create-response 404 {:message "User not found"} "application/json"))
+       (create-response 200 response))
+     (create-response 404 {:message "User not found"}))
    (catch [:status 404] {:keys [status body headers]}
      {:status 404 :body body :headers headers})
    (catch [:status 500] {:keys [body headers]}
@@ -101,7 +101,7 @@
                                   user-uid
                                   "/"
                                   (:orderUid body))}})
-     (create-response 404 {:message "User not found"} "application/json"))
+     (create-response 404 {:message "User not found"}))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -112,7 +112,7 @@
      (do
        (orders/refund-purchase! order-uid)
        {:status 204})
-     (create-response 404 {:message "User not found"} "application/json"))
+     (create-response 404 {:message "User not found"}))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -126,8 +126,7 @@
        (create-response 200
                         {:orderUid order-uid
                          :warrantyDate (:warrantyDate body)
-                         :decision (:decision body)}
-                        "application/json"))
-     (create-response 404 {:message "User not found"} "application/json"))
+                         :decision (:decision body)}))
+     (create-response 404 {:message "User not found"}))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))

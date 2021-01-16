@@ -22,7 +22,7 @@
                                  (uuid))
               _ (warranty/start-warranty! order-item-uid)
               _ (orders/create-order! order-uid user-uid order-item-uid)]
-          (create-response 200 {:orderUid order-uid} "application/json"))
+          (create-response 200 {:orderUid order-uid}))
         (catch [:status 404] {:keys [status body headers]}
           {:status 404 :body body :headers headers})
         (catch [:status 500] {:keys [body headers]}

@@ -2,7 +2,7 @@
   (:require [store-service.entities.users :refer [create-users-table!]]
             [store-service.repositories.users-repository :as rep]
             [ring.adapter.jetty :refer [run-jetty]]
-            [store-service.helpers.subroutines :refer [uuid]]
+            [store-service.helpers.subroutines :refer [uuid remove-utf-8-from-header]]
             [store-service.routers.users-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))
@@ -19,6 +19,7 @@
   (-> app-naked
       ; Преобразует тело ответа в JSON.
       (wrap-json-response)
+      (remove-utf-8-from-header)
       ; Преобразует тело запроса в словарь с ключами кейвордами.
       (wrap-json-body {:keywords? true})))
 

@@ -11,11 +11,9 @@
          (if item
            (create-response 200
                             {:model (:model item)
-                             :size (:size item)}
-                            "application/json")
+                             :size (:size item)})
            (create-response 404
-                            {:message "The item with the specified order-item-uid was not found."}
-                            "application/json")))
+                            {:message "The item with the specified order-item-uid was not found."})))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn get-order-item!
@@ -23,11 +21,9 @@
   (try (let [item (i-rep/get-item-by-order-item-uid! order-item-uid)]
          (if item
            (create-response 200
-                            (rename-keys item {:available_count :availableCount})
-                            "application/json")
+                            (rename-keys item {:available_count :availableCount}))
            (create-response 404
-                            {:message "The item with the specified order-item-uid was not found."}
-                            "application/json")))
+                            {:message "The item with the specified order-item-uid was not found."})))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn take-item!
@@ -50,8 +46,7 @@
                                 {:orderItemUid (:order_item_uid order-item)
                                  :orderUid (:order_uid order-item)
                                  :size (:size item)
-                                 :model (:model item)}
-                                "application/json")))))
+                                 :model (:model item)})))))
        (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn return-item!

@@ -21,7 +21,7 @@
                                           :headers {"Content-Type" "application/json"}})
               json-body (:body response)
               map-body (json/read-str json-body :key-fn keyword)]
-          (create-response 200 map-body "application/json"))
+          (create-response 200 map-body))
         (catch [:status 404] {:keys [status body headers]}
           {:status 404 :body body :headers headers})
         (catch [:status 500] {:keys [body headers]}

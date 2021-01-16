@@ -2,6 +2,7 @@
   (:require [order-service.entities.orders :refer [create-orders-table!]]
             [ring.adapter.jetty :refer [run-jetty]]
             [order-service.routers.orders-router :refer [router] :rename {router app-naked}]
+            [order-service.helpers.subroutines :refer [remove-utf-8-from-header]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))
 
@@ -10,6 +11,7 @@
   (-> app-naked
       ; Преобразует тело ответа в JSON.
       (wrap-json-response)
+      (remove-utf-8-from-header)
       ; Преобразует тело запроса в словарь с ключами кейвордами.
       (wrap-json-body {:keywords? true})))
 

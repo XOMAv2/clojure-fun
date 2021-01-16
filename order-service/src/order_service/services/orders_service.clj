@@ -12,8 +12,7 @@
                             {:orderUid (:order_uid order)
                              :itemUid (:item_uid order)
                              :status (:status order)
-                             :orderDate (:order_date order)}
-                            "application/json")
+                             :orderDate (:order_date order)})
            (create-response 404
                             {:message "The order with the specified user-uid and order-uid was not found."})))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
@@ -26,8 +25,7 @@
                                                  :itemUid (:item_uid order)
                                                  :status (:status order)
                                                  :orderDate (:order_date order)})
-                                    orders))
-                          "application/json"))
+                                    orders))))
        (catch Exception e (create-response 500  {:message (ex-message e)}))))
 
 (defn get-order-by-order-uid!
