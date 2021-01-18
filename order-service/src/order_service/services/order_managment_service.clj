@@ -26,6 +26,8 @@
           {:status 404 :body body :headers headers})
         (catch [:status 500] {:keys [body headers]}
           {:status 422 :body body :headers headers})
+        (catch [:status 503] {:keys [status body headers]}
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
@@ -39,6 +41,8 @@
           {:status 204})
         (catch [:status 500] {:keys [body headers]}
           {:status 422 :body body :headers headers})
+        (catch [:status 503] {:keys [status body headers]}
+          {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
@@ -49,6 +53,8 @@
               warehouse-response (warehouse/use-warranty-item! item-uid request-body)]
           warehouse-response)
         (catch [:status 500] {:keys [body headers]}
+          {:status 422 :body body :headers headers})
+        (catch [:status 503] {:keys [status body headers]}
           {:status 422 :body body :headers headers})
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

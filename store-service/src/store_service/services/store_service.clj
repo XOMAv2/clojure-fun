@@ -50,6 +50,8 @@
      {:status 404 :body body :headers headers})
    (catch [:status 500] {:keys [body headers]}
      {:status 422 :body body :headers headers})
+   (catch [:status 503] {:keys [status body headers]}
+     {:status 422 :body body :headers headers})
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -85,6 +87,8 @@
      {:status 404 :body body :headers headers})
    (catch [:status 500] {:keys [body headers]}
      {:status 422 :body body :headers headers})
+   (catch [:status 503] {:keys [status body headers]}
+     {:status 422 :body body :headers headers})
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -102,6 +106,8 @@
                                   "/"
                                   (:orderUid body))}})
      (create-response 404 {:message "User not found"}))
+   (catch [:status 503] {:keys [status body headers]}
+     {:status 422 :body body :headers headers})
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -113,6 +119,8 @@
        (orders/refund-purchase! order-uid)
        {:status 204})
      (create-response 404 {:message "User not found"}))
+   (catch [:status 503] {:keys [status body headers]}
+     {:status 422 :body body :headers headers})
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -128,5 +136,7 @@
                          :warrantyDate (:warrantyDate body)
                          :decision (:decision body)}))
      (create-response 404 {:message "User not found"}))
+   (catch [:status 503] {:keys [status body headers]}
+     {:status 422 :body body :headers headers})
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
