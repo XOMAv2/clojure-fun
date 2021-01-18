@@ -26,17 +26,23 @@
                                item-uid (:itemUid order-info)
                                order {:orderUid order-uid
                                       :date (:orderDate order-info)}
-                               warehouse-response (warehouse/get-item-info! item-uid)
-                               warehouse-body (json/read-str (:body warehouse-response)
-                                                             :key-fn keyword)
+                               warehouse-body (try (json/read-str
+                                                    (-> item-uid
+                                                        (warehouse/get-item-info!)
+                                                        (:body))
+                                                    :key-fn keyword)
+                                                   (catch Exception _ nil))
                                order (if (empty? warehouse-body)
                                        order
                                        (-> order
                                            (assoc :model (:model warehouse-body))
                                            (assoc :size (:size warehouse-body))))
-                               warranty-response (warranty/get-item-warranty-info! item-uid)
-                               warranty-body (json/read-str (:body warranty-response)
-                                                            :key-fn keyword)
+                               warranty-body (try (json/read-str
+                                                   (-> item-uid
+                                                       (warranty/get-item-warranty-info!)
+                                                       (:body))
+                                                   :key-fn keyword)
+                                                  (catch Exception _ nil))
                                order (if (empty? warranty-body)
                                        order
                                        (-> order
@@ -65,17 +71,23 @@
            response {:orderUid order-uid
                      :date (:orderDate order-body)}
            item-uid (:itemUid order-body)
-           warehouse-response (warehouse/get-item-info! item-uid)
-           warehouse-body (json/read-str (:body warehouse-response)
-                                         :key-fn keyword)
+           warehouse-body (try (json/read-str
+                                (-> item-uid
+                                    (warehouse/get-item-info!)
+                                    (:body))
+                                :key-fn keyword)
+                               (catch Exception _ nil))
            response (if (empty? warehouse-body)
                       response
                       (-> response
                           (assoc :model (:model warehouse-body))
                           (assoc :size (:size warehouse-body))))
-           warranty-response (warranty/get-item-warranty-info! item-uid)
-           warranty-body (json/read-str (:body warranty-response)
-                                        :key-fn keyword)
+           warranty-body (try (json/read-str
+                               (-> item-uid
+                                   (warranty/get-item-warranty-info!)
+                                   (:body))
+                               :key-fn keyword)
+                              (catch Exception _ nil))
            response (if (empty? warranty-body)
                       response
                       (-> response
