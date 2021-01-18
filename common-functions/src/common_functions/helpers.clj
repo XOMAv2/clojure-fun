@@ -1,5 +1,7 @@
 (ns common-functions.helpers
-  (:require [clojure.spec.alpha :as s]))
+  (:require [clojure.spec.alpha :as s]
+            [common-functions.circuit-breaker :as cb])
+  (:use [slingshot.slingshot :only [throw+ try+]]))
 
 (defn create-response
   ([status body]
@@ -40,3 +42,41 @@
     (if (= errors [])
       (apply handler (reduce #(conj % (second %2)) [] pairs))
       {:status 400 :body {:message errors}})))
+
+(defn def-cb-service-call
+  [call-function]
+  (cb/make-circuit-breaker
+   (fn [& args]
+     (try+ {:result :ok
+            :value {:response (apply call-function args)}}
+           (catch [:status 404] {:as response}
+             {:result :ok
+              :value {:should-throw? true
+                      :response response}})
+           (catch [:status 422] {:as response}
+             {:result :ok
+              :value {:should-throw? true
+                      :response response}})
+           (catch [:status 500] {:as response}
+             {:result :ok
+              :value {:should-throw? true
+                      :response response}})
+           (catch [:status 503] {:as response}
+             {:result :soft-failure})
+           (catch Exception e
+             {:result :soft-failure})))
+   {:max-retries 3 :retry-after-ms 1000}))
+
+(defn apply-cb-service-call
+  [cb-call-function & args]
+  (let [res (apply cb-call-function args)
+        status (:result res)
+        value (:value res)
+        should-throw? (:should-throw? value)
+        response (:response value)]
+    (if (= status :ok)
+      (if should-throw?
+        (throw+ response)
+        response)
+      (throw+ {:status 503
+               :body {:message "The service is not available."}}))))
