@@ -29,11 +29,11 @@
               json-body (:body response)
               map-body (json/read-str json-body :key-fn keyword)]
           (create-response 200 map-body))
-        (catch [:status 404] {:keys [status body headers]}
-          {:status 404 :body body :headers headers})
-        (catch [:status 500] {:keys [body headers]}
-          {:status 422 :body body :headers headers})
-        (catch [:status 503] {:keys [status body headers]}
-          {:status 422 :body body :headers headers})
+        (catch [:status 404] {:as response}
+          response)
+        (catch [:status 500] {:as response}
+          (assoc response :status 422))
+        (catch [:status 503] {:as response}
+          (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

@@ -22,12 +22,12 @@
               _ (warranty/start-warranty! order-item-uid)
               _ (orders/create-order! order-uid user-uid order-item-uid)]
           (create-response 200 {:orderUid order-uid}))
-        (catch [:status 404] {:keys [status body headers]}
-          {:status 404 :body body :headers headers})
-        (catch [:status 500] {:keys [body headers]}
-          {:status 422 :body body :headers headers})
-        (catch [:status 503] {:keys [status body headers]}
-          {:status 422 :body body :headers headers})
+        (catch [:status 404] {:as response}
+          response)
+        (catch [:status 500] {:as response}
+          (assoc response :status 422))
+        (catch [:status 503] {:as response}
+          (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
@@ -39,10 +39,10 @@
               _ (warranty/stop-warranty! item-uid)
               _ (orders/cancel-order! order-uid)]
           {:status 204})
-        (catch [:status 500] {:keys [body headers]}
-          {:status 422 :body body :headers headers})
-        (catch [:status 503] {:keys [status body headers]}
-          {:status 422 :body body :headers headers})
+        (catch [:status 500] {:as response}
+          (assoc response :status 422))
+        (catch [:status 503] {:as response}
+          (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
 
@@ -52,9 +52,9 @@
               item-uid (:item_uid order)
               warehouse-response (warehouse/use-warranty-item! item-uid request-body)]
           warehouse-response)
-        (catch [:status 500] {:keys [body headers]}
-          {:status 422 :body body :headers headers})
-        (catch [:status 503] {:keys [status body headers]}
-          {:status 422 :body body :headers headers})
+        (catch [:status 500] {:as response}
+          (assoc response :status 422))
+        (catch [:status 503] {:as response}
+          (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

@@ -46,12 +46,12 @@
                        user-orders)]
        (create-response 200 orders))
      (create-response 404 {:message "User not found"}))
-   (catch [:status 404] {:keys [status body headers]}
-     {:status 404 :body body :headers headers})
-   (catch [:status 500] {:keys [body headers]}
-     {:status 422 :body body :headers headers})
-   (catch [:status 503] {:keys [status body headers]}
-     {:status 422 :body body :headers headers})
+   (catch [:status 404] {:as response}
+     response)
+   (catch [:status 500] {:as response}
+     (assoc response :status 422))
+   (catch [:status 503] {:as response}
+     (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -83,12 +83,12 @@
                           (assoc :warrantyStatus (:warrantyStatus warranty-body))))]
        (create-response 200 response))
      (create-response 404 {:message "User not found"}))
-   (catch [:status 404] {:keys [status body headers]}
-     {:status 404 :body body :headers headers})
-   (catch [:status 500] {:keys [body headers]}
-     {:status 422 :body body :headers headers})
-   (catch [:status 503] {:keys [status body headers]}
-     {:status 422 :body body :headers headers})
+   (catch [:status 404] {:as response}
+     response)
+   (catch [:status 500] {:as response}
+     (assoc response :status 422))
+   (catch [:status 503] {:as response}
+     (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -106,8 +106,8 @@
                                   "/"
                                   (:orderUid body))}})
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:keys [status body headers]}
-     {:status 422 :body body :headers headers})
+   (catch [:status 503] {:as response}
+     (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -119,8 +119,8 @@
        (orders/refund-purchase! order-uid)
        {:status 204})
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:keys [status body headers]}
-     {:status 422 :body body :headers headers})
+   (catch [:status 503] {:as response}
+     (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 
@@ -136,7 +136,7 @@
                          :warrantyDate (:warrantyDate body)
                          :decision (:decision body)}))
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:keys [status body headers]}
-     {:status 422 :body body :headers headers})
+   (catch [:status 503] {:as response}
+     (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
