@@ -24,9 +24,7 @@
           (create-response 200 {:orderUid order-uid}))
         (catch [:status 404] {:as response}
           response)
-        (catch [:status 500] {:as response}
-          (assoc response :status 422))
-        (catch [:status 503] {:as response}
+        (catch #(#{500 503} (:status %)) {:as response}
           (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
@@ -39,9 +37,7 @@
               _ (warranty/stop-warranty! item-uid)
               _ (orders/cancel-order! order-uid)]
           {:status 204})
-        (catch [:status 500] {:as response}
-          (assoc response :status 422))
-        (catch [:status 503] {:as response}
+        (catch #(#{500 503} (:status %)) {:as response}
           (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))
@@ -52,9 +48,7 @@
               item-uid (:item_uid order)
               warehouse-response (warehouse/use-warranty-item! item-uid request-body)]
           warehouse-response)
-        (catch [:status 500] {:as response}
-          (assoc response :status 422))
-        (catch [:status 503] {:as response}
+        (catch #(#{500 503} (:status %)) {:as response}
           (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

@@ -49,21 +49,13 @@
    (fn [& args]
      (try+ {:result :ok
             :value {:response (apply call-function args)}}
-           (catch [:status 404] {:as response}
+           (catch #(#{404 422 500} (:status %)) {:as call-response}
              {:result :ok
               :value {:should-throw? true
-                      :response response}})
-           (catch [:status 422] {:as response}
-             {:result :ok
-              :value {:should-throw? true
-                      :response response}})
-           (catch [:status 500] {:as response}
-             {:result :ok
-              :value {:should-throw? true
-                      :response response}})
-           (catch [:status 503] {:as response}
+                      :response call-response}})
+           (catch [:status 503] _
              {:result :soft-failure})
-           (catch Exception e
+           (catch Exception _
              {:result :soft-failure})))
    {:max-retries 3 :retry-after-ms 1000}))
 

@@ -8,9 +8,9 @@
             [config.core :refer [load-env]]
             [common-functions.uuid :refer [json-write-uuid]]
             [common-functions.helpers :refer [def-cb-service-call
-                                              apply-cb-service-call]]
-            [warehouse-service.services.warehouse-service :as warehouse]
-            [common-functions.helpers :refer [create-response]])
+                                              apply-cb-service-call
+                                              create-response]]
+            [warehouse-service.services.warehouse-service :as warehouse])
   (:use [slingshot.slingshot :only [try+]]))
 
 (def warranty-url (let [config (load-env)
@@ -61,9 +61,7 @@
           (create-response 200 map-body))
         (catch [:status 404] {:as response}
           response)
-        (catch [:status 500] {:as response}
-          (assoc response :status 422))
-        (catch [:status 503] {:as response}
+        (catch #(#{500 503} (:status %)) {:as response}
           (assoc response :status 422))
         (catch Exception e
           (create-response 500 {:message (ex-message e)}))))

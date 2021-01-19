@@ -3,7 +3,7 @@
 (defn uuid [str]
   (try
     (java.util.UUID/fromString str)
-    (catch Exception _ nil)))
+    (catch Exception _)))
 
 (defn random-uuid []
   (java.util.UUID/randomUUID))

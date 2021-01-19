@@ -31,7 +31,7 @@
                                                         (warehouse/get-item-info!)
                                                         (:body))
                                                     :key-fn keyword)
-                                                   (catch Exception _ nil))
+                                                   (catch Exception _))
                                order (if (empty? warehouse-body)
                                        order
                                        (-> order
@@ -42,7 +42,7 @@
                                                        (warranty/get-item-warranty-info!)
                                                        (:body))
                                                    :key-fn keyword)
-                                                  (catch Exception _ nil))
+                                                  (catch Exception _))
                                order (if (empty? warranty-body)
                                        order
                                        (-> order
@@ -54,9 +54,7 @@
      (create-response 404 {:message "User not found"}))
    (catch [:status 404] {:as response}
      response)
-   (catch [:status 500] {:as response}
-     (assoc response :status 422))
-   (catch [:status 503] {:as response}
+   (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
@@ -76,7 +74,7 @@
                                     (warehouse/get-item-info!)
                                     (:body))
                                 :key-fn keyword)
-                               (catch Exception _ nil))
+                               (catch Exception _))
            response (if (empty? warehouse-body)
                       response
                       (-> response
@@ -87,7 +85,7 @@
                                    (warranty/get-item-warranty-info!)
                                    (:body))
                                :key-fn keyword)
-                              (catch Exception _ nil))
+                              (catch Exception _))
            response (if (empty? warranty-body)
                       response
                       (-> response
@@ -97,9 +95,7 @@
      (create-response 404 {:message "User not found"}))
    (catch [:status 404] {:as response}
      response)
-   (catch [:status 500] {:as response}
-     (assoc response :status 422))
-   (catch [:status 503] {:as response}
+   (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
@@ -118,7 +114,7 @@
                                   "/"
                                   (:orderUid body))}})
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:as response}
+   (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
@@ -131,7 +127,7 @@
        (orders/refund-purchase! order-uid)
        {:status 204})
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:as response}
+   (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
@@ -148,7 +144,7 @@
                          :warrantyDate (:warrantyDate body)
                          :decision (:decision body)}))
      (create-response 404 {:message "User not found"}))
-   (catch [:status 503] {:as response}
+   (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
