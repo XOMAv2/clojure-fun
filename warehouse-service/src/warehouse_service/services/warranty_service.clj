@@ -1,17 +1,25 @@
 (ns warehouse-service.services.warranty-service
-   (:require [clj-http.client :as client]
-             [clojure.data.json :as json]
-             [config.core :refer [load-env]]
-             [common-functions.helpers :refer [def-cb-service-call
-                                               apply-cb-service-call]]
-             [warehouse-service.services.warehouse-service :as warehouse]
-             [common-functions.helpers :refer [create-response]])
+  (:require [clj-http.client :as client]
+            [clojure.data.json :as json]
+            [langohr.core :as rmq]
+            [langohr.channel :as lch]
+            [langohr.queue :as lq]
+            [langohr.basic :as lb]
+            [config.core :refer [load-env]]
+            [common-functions.uuid :refer [json-write-uuid]]
+            [common-functions.helpers :refer [def-cb-service-call
+                                              apply-cb-service-call]]
+            [warehouse-service.services.warehouse-service :as warehouse]
+            [common-functions.helpers :refer [create-response]])
   (:use [slingshot.slingshot :only [try+]]))
 
 (def warranty-url (let [config (load-env)
                         env-type (:env-type config)
                         env (env-type (:env config))]
                     (:warranty-url env)))
+
+(def ^{:const true}
+  default-exchange-name "")
 
 (def cb-warranty-request!
   (def-cb-service-call
@@ -25,9 +33,31 @@
               request {:reason reason
                        :availableCount available-count}
               path (str warranty-url "api/v1/warranty/" order-item-uid "/warranty")
-              response (apply-cb-service-call cb-warranty-request! path request)
-              json-body (:body response)
-              map-body (json/read-str json-body :key-fn keyword)]
+              response (try+
+                        (apply-cb-service-call cb-warranty-request! path request)
+                        (catch [:status 503] _
+                          (let [config (load-env)
+                                env-type (:env-type config)
+                                amqp-url (-> config
+                                             (:env)
+                                             (env-type)
+                                             (:amqp-url))
+                                conn (rmq/connect {:uri amqp-url})
+                                channel (lch/open conn)
+                                qname "warranty-queue"]
+                            (lq/declare channel qname {:exclusive false
+                                                       :auto-delete true})
+                            (lb/publish channel
+                                        default-exchange-name
+                                        qname
+                                        (json/write-str {:item-uid order-item-uid
+                                                         :body request}
+                                                        :value-fn json-write-uuid)
+                                        {:content-type "application/json"})
+                            (rmq/close channel)
+                            (rmq/close conn))))
+              map-body (when response
+                         (json/read-str (:body response) :key-fn keyword))]
           (create-response 200 map-body))
         (catch [:status 404] {:as response}
           response)

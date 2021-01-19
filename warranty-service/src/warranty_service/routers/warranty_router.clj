@@ -13,6 +13,12 @@
 (s/def ::request-warranty-decision (s/keys :req-un [::reason
                                                     ::availableCount]))
 
+(defn validate-and-make-warranty-decision!
+  [item-uid body]
+  (validate-and-handle service/warranty-decision!
+                       [uuid? item-uid]
+                       [::request-warranty-decision body]))
+
 (defroutes routes
   (context "/api/v1/warranty/:item-uid" [item-uid :<< as-uuid]
     (GET "/" [] (validate-and-handle service/get-warranty!
@@ -21,9 +27,9 @@
                                       [uuid? item-uid]))
     (DELETE "/" [] (validate-and-handle service/close-warranty!
                                         [uuid? item-uid]))
-    (POST "/warranty" {:keys [body]} (validate-and-handle service/warranty-decision!
-                                                          [uuid? item-uid]
-                                                          [::request-warranty-decision body])))
+    (POST "/warranty" {:keys [body]} (validate-and-make-warranty-decision!
+                                      item-uid
+                                      body)))
   (fn [_] {:status 404}))
 
 (def router (handler/api routes))
