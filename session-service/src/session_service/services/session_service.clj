@@ -28,34 +28,40 @@
 (def public-key (keys/public-key "jwtRS256.key.pub"))
 (def clients
   (let [salt {:salt (:salt (load-env))}]
-    [["client1" (hashers/derive "client1" salt)]
-     ["client2" (hashers/derive "client2" salt)]]))
+    [[111 (hashers/derive "password1" salt)]
+     [222 (hashers/derive "password2" salt)]]))
 
 (defn authorize
   "Запрос аутентификации пользователя для получения клиентом
    авторизационного кода.
+   Код 404 означает, что сервис не зарегистрирован на сервере.
    Код 422 означает, что пользователь не смог пройти авторизацию.
    Код 302 означает, что токены выданы, а авторизационный код помещён в
    заголовок Location после callback-пути в качестве квери-парамтера code."
-  [body]
+  [{:keys [client-id] :as body}]
   (try
-    (if-let [{user-uid :user_uid} (u-rep/get-user-by-name-and-password-hash!
+    (if (some #(= (first %) client-id) clients)
+      (if-let [{user-uid :user_uid} (u-rep/get-user-by-name-and-password-hash!
                                      (:name body)
                                      (hashers/derive (:password body) {:salt (:salt (load-env))}))]
-      (let [claims {:user-uid user-uid
-                    :exp (t/plus (t/now) (t/days 30))}
-            refresh-token (jwt/sign claims private-key {:alg :rs256})
-            claims {:user-uid user-uid
-                    :exp (t/plus (t/now) (t/minutes 30))}
-            access-token (jwt/sign claims private-key {:alg :rs256})
-            authorization-code (random-uuid)]
-        (c-rep/add-code! {:access_token access-token
-                          :refresh_token refresh-token
-                          :code authorization-code
-                          :exp (time/sql-timestamp (time/plus (time/local-date-time)
-                                                              (time/days 1)))})
-        {:status 302 :headers {"Location" (str (:callback body) "?code=" authorization-code)}})
-      (create-response 422 {:message "Invalid name or password."}))
+        (let [claims {:user-uid user-uid
+                      :exp (t/plus (t/now) (t/days 30))}
+              refresh-token (jwt/sign claims private-key {:alg :rs256})
+              claims {:user-uid user-uid
+                      :exp (t/plus (t/now) (t/minutes 30))}
+              access-token (jwt/sign claims private-key {:alg :rs256})
+              authorization-code (random-uuid)]
+          (when-let [row (c-rep/get-row-by-client-id! client-id)]
+            (c-rep/delete-row-by-code! (:code row)))
+          (c-rep/add-code! {:client_id client-id
+                            :access_token access-token
+                            :refresh_token refresh-token
+                            :code authorization-code
+                            :exp (time/sql-timestamp (time/plus (time/local-date-time)
+                                                                (time/days 1)))})
+          {:status 302 :headers {"Location" (str (:callback body) "?code=" authorization-code)}})
+        (create-response 422 {:message "Invalid name or password."}))
+      (create-response 404 {:message "A client with a specific clientId was not found."}))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn code->jwt
@@ -95,7 +101,7 @@
              claims {:user-uid user-uid
                      :exp (t/plus (t/now) (t/minutes 30))}
              access-token (jwt/sign claims private-key {:alg :rs256})]
-         (create-response 200 {:refresh-token refresh-token :access-token access-token}))
+         (create-response 200 {:refresh-token refresh-token :accessToken access-token}))
        (catch clojure.lang.ExceptionInfo e
          (create-response 401 (ex-message e)))
        (catch Exception e
