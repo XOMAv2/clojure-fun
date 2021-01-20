@@ -28,6 +28,21 @@
         response (apply-cb-service-call cb-take-item! path request)]
     response))
 
+(def cb-rollback-take-item!
+  (def-cb-service-call
+    (fn [path request]
+      (client/delete path
+                     {:body (json/write-str request
+                                            :value-fn json-write-uuid)
+                      :headers {"Content-Type" "application/json"}}))))
+
+(defn rollback-take-item!
+  [order-item-uid]
+  (let [request {:orderItemUid order-item-uid}
+        path (str warehouse-url "api/v1/warehouse/rollback")
+        response (apply-cb-service-call cb-rollback-take-item! path request)]
+    response))
+
 (def cb-return-item!
   (def-cb-service-call
     (fn [path]
@@ -37,6 +52,17 @@
   [item-uid]
   (let [path (str warehouse-url "api/v1/warehouse/" item-uid)
         response (apply-cb-service-call cb-return-item! path)]
+    response))
+
+(def cb-rollback-return-item!
+  (def-cb-service-call
+    (fn [path]
+      (client/post path))))
+
+(defn rollback-return-item!
+  [item-uid]
+  (let [path (str warehouse-url "api/v1/warehouse/" item-uid "/rollback")
+        response (apply-cb-service-call cb-rollback-return-item! path)]
     response))
 
 (def cb-use-warranty-item!

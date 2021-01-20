@@ -22,18 +22,27 @@
                                                    ::model
                                                    ::size]))
 
+(s/def ::orderItemUid (s/and string? #(re-matches uuid-pattern %)))
+
 (defroutes routes
   (context "/api/v1/warehouse" []
-    (POST "/" {:keys [body]} (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
-                                                  [::take-item-from-warehouse body]))
+    (POST "/" {:keys [body]}
+      (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
+                           [::take-item-from-warehouse body]))
+    (DELETE "/rollback" {{order-item-uid :orderItemUid } :body}
+      (validate-and-handle #(warehouse/rollback-take-item! (as-uuid %))
+                           [::orderItemUid order-item-uid]))
     (context "/:item-uid" [item-uid :<< as-uuid]
       (GET "/" [] (validate-and-handle warehouse/get-item-info!
                                        [uuid? item-uid]))
       (DELETE "/" [] (validate-and-handle warehouse/return-item!
                                           [uuid? item-uid]))
-      (POST "/warranty" {:keys [body]} (validate-and-handle #(warranty/warranty-request! % (:reason %2))
-                                                            [uuid? item-uid]
-                                                            [::request-item-warranty body]))))
+      (POST "/rollback" [] (validate-and-handle warehouse/rollback-return-item!
+                                                [uuid? item-uid]))
+      (POST "/warranty" {:keys [body]}
+        (validate-and-handle #(warranty/warranty-request! % (:reason %2))
+                             [uuid? item-uid]
+                             [::request-item-warranty body]))))
   (fn [_] {:status 404}))
 
 (def router (handler/api routes))

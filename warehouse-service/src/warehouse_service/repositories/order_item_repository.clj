@@ -23,8 +23,8 @@
    (add-order-item! *db-spec* order-item))
   ([db-spec order-item]
    (execute! db-spec (-> (honey/insert-into :order-item)
-                           (honey/values [order-item])
-                           (honey-eval)))))
+                         (honey/values [order-item])
+                         (honey-eval)))))
 
 (defn cancel-order-item!
   "Изменение значение canceled на true в строки с указанным order-item-uid в таблице order-item."
@@ -33,5 +33,23 @@
   ([db-spec order-item-uid]
    (execute! db-spec (-> (honey/update :order-item)
                          (honey/sset {:canceled true})
+                         (honey/where [:= order-item-uid :order_item_uid])
+                         (honey-eval)))))
+(defn open-order-item!
+  "Изменение значение canceled на false в строки с указанным order-item-uid в таблице order-item."
+  ([order-item-uid]
+   (open-order-item! *db-spec* order-item-uid))
+  ([db-spec order-item-uid]
+   (execute! db-spec (-> (honey/update :order-item)
+                         (honey/sset {:canceled false})
+                         (honey/where [:= order-item-uid :order_item_uid])
+                         (honey-eval)))))
+
+(defn delete-order-item!
+  "Удаление строки с указанным order-item-uid в таблице order-item."
+  ([order-item-uid]
+   (delete-order-item! *db-spec* order-item-uid))
+  ([db-spec order-item-uid]
+   (execute! db-spec (-> (honey/delete-from :order-item)
                          (honey/where [:= order-item-uid :order_item_uid])
                          (honey-eval)))))

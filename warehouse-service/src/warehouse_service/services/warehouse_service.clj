@@ -32,7 +32,7 @@
              size (:size request)
              order-uid (:orderUid request)
              item (i-rep/get-item-by-model-and-size! model size)]
-         (if (= item nil)
+         (if (nil? item)
            (create-response 404 {:message "Requested item not found"})
            (if (< (:available_count item) 1)
              (throw (Exception. "Item is finished on warehouse"))
@@ -49,11 +49,26 @@
                                  :model (:model item)})))))
        (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
+(defn rollback-take-item!
+  [order-item-uid]
+  (try (oi-rep/delete-order-item! order-item-uid)
+       (i-rep/return-one-item! order-item-uid)
+       {:status 200}
+       (catch Exception e (create-response 500 {:message (ex-message e)}))))
+
 (defn return-item!
   [order-item-uid]
   (try (i-rep/return-one-item! order-item-uid)
        (oi-rep/cancel-order-item! order-item-uid)
        {:status 204}
+       (catch Exception e (create-response 500 {:message (ex-message e)}))))
+
+(defn rollback-return-item!
+  [order-item-uid]
+  (try (let [item (i-rep/get-item-by-order-item-uid! order-item-uid)]
+         (i-rep/take-one-item! (:id item))
+         (oi-rep/open-order-item! order-item-uid)
+         {:status 200})
        (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn check-item-available-count
