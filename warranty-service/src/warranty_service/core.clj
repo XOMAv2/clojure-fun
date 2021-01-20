@@ -6,6 +6,7 @@
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             [common-functions.middlewares :refer [remove-utf-8-from-header]]
             [warranty-service.entities.warranty :refer [*db-spec* warranty-table-spec]]
+            [config.core :refer [load-env]]
             [clojure.data.json :as json]
             [langohr.core :as rmq]
             [langohr.channel :as lch]
