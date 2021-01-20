@@ -19,6 +19,7 @@
                 :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"
                 :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"
                 :orders-url "https://lab2-xomav2-order-service.herokuapp.com/"
-                :store-url "https://lab2-xomav2-store-service.herokuapp.com/"}}}
+                :store-url "https://lab2-xomav2-store-service.herokuapp.com/"}}
+ :salt "000001772107ed8a"}
 
 

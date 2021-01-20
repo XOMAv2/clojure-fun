@@ -15,4 +15,5 @@
                           :password "feb52908e6e3db2223be8866e162a7477748e82093b059c5fbc3ca724dd79ae2"
                           :uri "postgres://tsklnmwxjcazke:feb52908e6e3db2223be8866e162a7477748e82093b059c5fbc3ca724dd79ae2@ec2-176-34-114-78.eu-west-1.compute.amazonaws.com:5432/davghbf231pbic"}
                 :amqp-url "amqps://hmyqsqzx:7vckxkOKH2Zc-4ID6GRMi0ZKNmrdS-Th@crow.rmq.cloudamqp.com/hmyqsqzx"
-                :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"}}}
+                :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"}}
+ :salt "000001772107efcd"}

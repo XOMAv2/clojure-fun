@@ -15,4 +15,5 @@
                           :password "1a3b7d11658342061d4f08b133ebd229105f37d921207adcdc6375b96b41e56e"
                           :uri "postgres://aebaxwnoiofwxs:1a3b7d11658342061d4f08b133ebd229105f37d921207adcdc6375b96b41e56e@ec2-79-125-86-58.eu-west-1.compute.amazonaws.com:5432/dbd82ke8pdks5k"}
                 :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"
-                :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"}}}
+                :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"}}
+ :salt "000001772107eb5f"}

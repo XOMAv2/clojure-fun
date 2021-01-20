@@ -13,4 +13,5 @@
                           :port 5432
                           :password "1451557504c0f35cf8a982515a3656e3bf3e5be6f877cca1d488cdb7e88a20ec"
                           :uri "postgres://jlulmiacdrwttq:1451557504c0f35cf8a982515a3656e3bf3e5be6f877cca1d488cdb7e88a20ec@ec2-176-34-114-78.eu-west-1.compute.amazonaws.com:5432/db2jefklljn3qb"}
-                :amqp-url "amqps://hmyqsqzx:7vckxkOKH2Zc-4ID6GRMi0ZKNmrdS-Th@crow.rmq.cloudamqp.com/hmyqsqzx"}}}
+                :amqp-url "amqps://hmyqsqzx:7vckxkOKH2Zc-4ID6GRMi0ZKNmrdS-Th@crow.rmq.cloudamqp.com/hmyqsqzx"}}
+ :salt "000001772107f310"}
