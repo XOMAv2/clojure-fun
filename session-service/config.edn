@@ -1,0 +1,15 @@
+{:env-type :heroku
+ :env {:local {:db-spec {:dbtype "postgresql"
+                         :dbname "rsoi-lab04"
+                         :host "localhost"
+                         :port 5432
+                         :user "postgres"
+                         :password "123"}}
+       :heroku {:db-spec {:dbtype "postgresql"
+                          :host "ec2-54-216-155-253.eu-west-1.compute.amazonaws.com"
+                          :dbname "dcoi7fq3q7qmb1"
+                          :user "uehiqpnfovedvo"
+                          :port 5432
+                          :password "32481afe556353673e20bc646b500dfcf4123ec91b72e2e05e83e1b521a7ee6b"
+                          :uri "postgres://uehiqpnfovedvo:32481afe556353673e20bc646b500dfcf4123ec91b72e2e05e83e1b521a7ee6b@ec2-54-216-155-253.eu-west-1.compute.amazonaws.com:5432/dcoi7fq3q7qmb1"}}}
+ :salt "0000017721060b2c"}

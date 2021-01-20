@@ -14,6 +14,10 @@ jobs:
           lein jar
           lein install
 
+      - name: Build Session Service
+        working-directory: ./session-service
+        run: lein uberjar
+
       - name: Build Warranty Service
         working-directory: ./warranty-service
         run: lein uberjar
@@ -29,6 +33,16 @@ jobs:
       - name: Build Store Service
         working-directory: ./store-service
         run: lein uberjar
+
+      - name: Deploy Session Service
+        working-directory: ./session-service
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: lab4-xomav2-session-service
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME
+          heroku container:release web -a $APP_NAME
 
       - name: Deploy Warranty Service
         working-directory: ./warranty-service
