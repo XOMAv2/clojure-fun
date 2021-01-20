@@ -13,6 +13,7 @@
                  [common-functions "0.1.0-SNAPSHOT"]
                  [compojure "1.6.1"]
                  [com.novemberain/langohr "5.2.0"]
+                 [com.fzakaria/slf4j-timbre "0.3.20"]
                  [slingshot "0.12.2"]
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
