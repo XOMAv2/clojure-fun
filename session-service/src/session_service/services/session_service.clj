@@ -82,8 +82,8 @@
                     (:exp)
                     (sql-timestamp-to-local-date-time)
                     (time/after? (time/local-date-time)))
-              (create-response 200 {:access-token (:access_token row)
-                                    :refresh-token (:refresh_token row)})
+              (create-response 200 {:accessToken (:access_token row)
+                                    :refreshToken (:refresh_token row)})
               (create-response 401 {:message "Code is expired."})))
         (create-response 404 {:message (str "Tokens not found for code '" code "'.")}))
       (create-response 422 {:message "Invalid clientId or clientSecret."}))
@@ -101,7 +101,7 @@
              claims {:user-uid user-uid
                      :exp (t/plus (t/now) (t/minutes 30))}
              access-token (jwt/sign claims private-key {:alg :rs256})]
-         (create-response 200 {:refresh-token refresh-token :accessToken access-token}))
+         (create-response 200 {:refreshToken refresh-token :accessToken access-token}))
        (catch clojure.lang.ExceptionInfo e
          (create-response 401 (ex-message e)))
        (catch Exception e
