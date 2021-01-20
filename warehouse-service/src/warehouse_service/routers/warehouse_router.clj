@@ -3,6 +3,7 @@
                                     defroutes context]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
+            [compojure.route :as route]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [warehouse-service.services.warehouse-service :as warehouse]
@@ -43,6 +44,6 @@
         (validate-and-handle #(warranty/warranty-request! % (:reason %2))
                              [uuid? item-uid]
                              [::request-item-warranty body]))))
-  (fn [_] {:status 404}))
+  (route/not-found {:status 404}))
 
 (def router (handler/api routes))

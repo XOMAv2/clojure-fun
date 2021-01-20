@@ -1,6 +1,7 @@
 (ns store-service.routers.users-router
   (:require [compojure.core :refer [GET POST DELETE
                                     defroutes context]]
+            [compojure.route :as route]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [clojure.spec.alpha :as s]
@@ -35,6 +36,6 @@
       (DELETE "/refund" [] (validate-and-handle service/refund-purchase!
                                                 [uuid? user-uid]
                                                 [uuid? order-uid]))))
-  (fn [_] {:status 404}))
+  (route/not-found {:status 404}))
 
 (def router (handler/api routes))
