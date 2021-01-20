@@ -20,7 +20,7 @@
   (let [user {:name "Alex"
               :user_uid (uuid "6d2cb5a0-943c-4b96-9aa6-89eac7bdfd2b")
               :password_hash (hashers/derive "Alex" {:salt (:salt (load-env))})}]
-    (when (not (rep/get-user-by-user-uid! (:user-uid user)))
+    (when (not (rep/get-user-by-user-uid! (:user_uid user)))
       (rep/add-user! user))))
 
 ; Middleware выполняются снизу вверх для запроса и сверху вниз для ответа.
