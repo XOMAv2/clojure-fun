@@ -6,6 +6,7 @@
             [langohr.queue :as lq]
             [langohr.basic :as lb]
             [config.core :refer [load-env]]
+            [common-functions.auth-service :refer [auth-request]]
             [common-functions.uuid :refer [json-write-uuid]]
             [common-functions.helpers :refer [def-cb-service-call
                                               apply-cb-service-call
@@ -18,14 +19,26 @@
                         env (env-type (:env config))]
                     (:warranty-url env)))
 
+(def name "warehouse-service")
+(def password "warehouse-service")
+(def auth-path (str warranty-url "api/v1/warranty/auth"))
+(def access-token (atom (auth-request name password auth-path)))
+
 (def ^{:const true}
   default-exchange-name "")
 
 (def cb-warranty-request!
   (def-cb-service-call
     (fn [path request]
-      (client/post path {:body (json/write-str request)
-                         :headers {"Content-Type" "application/json"}}))))
+      (try+
+       (client/post path {:body (json/write-str request)
+                          :headers {"Content-Type" "application/json"
+                                    "Authorization" (str "Bearer " @access-token)}})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/post path {:body (json/write-str request)
+                            :headers {"Content-Type" "application/json"
+                                      "Authorization" (str "Bearer " @access-token)}}))))))
 
 (defn warranty-request!
   [order-item-uid reason]

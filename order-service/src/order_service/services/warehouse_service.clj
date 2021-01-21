@@ -2,22 +2,34 @@
   (:require [clj-http.client :as client]
             [config.core :refer [load-env]]
             [clojure.data.json :as json]
+            [common-functions.auth-service :refer [auth-request]]
             [common-functions.helpers :refer [def-cb-service-call
                                               apply-cb-service-call]]
-            [common-functions.uuid :refer [json-write-uuid]]))
+            [common-functions.uuid :refer [json-write-uuid]])
+  (:use [slingshot.slingshot :only [try+]]))
 
 (def warehouse-url (let [config (load-env)
                          env-type (:env-type config)
                          env (env-type (:env config))]
                      (:warehouse-url env)))
 
+(def name "order-service")
+(def password "order-service")
+(def auth-path (str warehouse-url "api/v1/warehouse/auth"))
+(def access-token (atom (auth-request name password auth-path)))
+
 (def cb-take-item!
   (def-cb-service-call
     (fn [path request]
-      (client/post path
-                   {:body (json/write-str request
-                                          :value-fn json-write-uuid)
-                    :headers {"Content-Type" "application/json"}}))))
+      (try+
+       (client/post path {:body (json/write-str request :value-fn json-write-uuid)
+                          :headers {"Content-Type" "application/json"
+                                    "Authorization" (str "Bearer " @access-token)}})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/post path {:body (json/write-str request :value-fn json-write-uuid)
+                            :headers {"Content-Type" "application/json"
+                                      "Authorization" (str "Bearer " @access-token)}}))))))
 
 (defn take-item!
   [order-uid model size]
@@ -31,10 +43,15 @@
 (def cb-rollback-take-item!
   (def-cb-service-call
     (fn [path request]
-      (client/delete path
-                     {:body (json/write-str request
-                                            :value-fn json-write-uuid)
-                      :headers {"Content-Type" "application/json"}}))))
+      (try+
+       (client/delete path {:body (json/write-str request :value-fn json-write-uuid)
+                            :headers {"Content-Type" "application/json"
+                                      "Authorization" (str "Bearer " @access-token)}})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/delete path {:body (json/write-str request :value-fn json-write-uuid)
+                              :headers {"Content-Type" "application/json"
+                                        "Authorization" (str "Bearer " @access-token)}}))))))
 
 (defn rollback-take-item!
   [order-item-uid]
@@ -46,7 +63,11 @@
 (def cb-return-item!
   (def-cb-service-call
     (fn [path]
-      (client/delete path))))
+      (try+
+       (client/delete path {"Authorization" (str "Bearer " @access-token)})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/delete path {"Authorization" (str "Bearer " @access-token)}))))))
 
 (defn return-item!
   [item-uid]
@@ -57,7 +78,11 @@
 (def cb-rollback-return-item!
   (def-cb-service-call
     (fn [path]
-      (client/post path))))
+      (try+
+       (client/post path {"Authorization" (str "Bearer " @access-token)})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/post path {"Authorization" (str "Bearer " @access-token)}))))))
 
 (defn rollback-return-item!
   [item-uid]
@@ -68,8 +93,15 @@
 (def cb-use-warranty-item!
   (def-cb-service-call
     (fn [path request-body]
-      (client/post path {:body (json/write-str request-body)
-                         :headers {"Content-Type" "application/json"}}))))
+      (try+
+       (client/post path {:body (json/write-str request-body)
+                          :headers {"Content-Type" "application/json"
+                                    "Authorization" (str "Bearer " @access-token)}})
+       (catch [:status 401] _
+         (swap! access-token (fn [x] (auth-request name password auth-path)))
+         (client/post path {:body (json/write-str request-body)
+                            :headers {"Content-Type" "application/json"
+                                      "Authorization" (str "Bearer " @access-token)}}))))))
 
 (defn use-warranty-item!
   [item-uid request-body]
