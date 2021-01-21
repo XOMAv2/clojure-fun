@@ -1,9 +1,11 @@
 (ns warranty-service.routers.warranty-router
   (:require [compojure.core :refer [GET POST DELETE
-                                    defroutes context]]
+                                    defroutes context routes wrap-routes]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
+            [buddy.core.keys :as keys]
+            [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [warranty-service.services.warranty-service :as service]))
@@ -20,7 +22,10 @@
                        [uuid? item-uid]
                        [::request-warranty-decision body]))
 
-(defroutes routes
+(defroutes public-routes
+  (POST "/api/v1/warranty/auth" [] {:status 200}))
+
+(defroutes private-routes
   (context "/api/v1/warranty/:item-uid" [item-uid :<< as-uuid]
     (GET "/" [] (validate-and-handle service/get-warranty!
                                      [uuid? item-uid]))
@@ -30,7 +35,11 @@
                                         [uuid? item-uid]))
     (POST "/warranty" {:keys [body]} (validate-and-make-warranty-decision!
                                       item-uid
-                                      body)))
-  (not-found {:status 404}))
+                                      body))))
 
-(def router (handler/api routes))
+(def router (handler/api (routes public-routes
+                                 private-routes
+                                 ;(wrap-routes private-routes
+                                 ;             jwt-authorization
+                                 ;             (keys/public-key "jwtRS256.key.pub"))
+                                 (not-found {:status 404}))))

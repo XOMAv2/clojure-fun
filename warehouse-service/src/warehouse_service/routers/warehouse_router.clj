@@ -1,9 +1,11 @@
 (ns warehouse-service.routers.warehouse-router
   (:require [compojure.core :refer [GET POST DELETE
-                                    defroutes context]]
+                                    defroutes context routes wrap-routes]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
+            [buddy.core.keys :as keys]
+            [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [warehouse-service.services.warehouse-service :as warehouse]
@@ -25,7 +27,10 @@
 
 (s/def ::orderItemUid (s/and string? #(re-matches uuid-pattern %)))
 
-(defroutes routes
+(defroutes public-routes
+  (POST "/api/v1/warehouse/auth" [] {:status 200}))
+
+(defroutes private-routes
   (context "/api/v1/warehouse" []
     (POST "/" {:keys [body]}
       (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
@@ -43,7 +48,11 @@
       (POST "/warranty" {:keys [body]}
         (validate-and-handle #(warranty/warranty-request! % (:reason %2))
                              [uuid? item-uid]
-                             [::request-item-warranty body]))))
-  (not-found {:status 404}))
+                             [::request-item-warranty body])))))
 
-(def router (handler/api routes))
+(def router (handler/api (routes public-routes
+                                 private-routes
+                                 ;(wrap-routes private-routes
+                                 ;             jwt-authorization
+                                 ;             (keys/public-key "jwtRS256.key.pub"))
+                                 (not-found {:status 404}))))

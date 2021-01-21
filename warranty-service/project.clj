@@ -10,6 +10,7 @@
                  [honeysql "1.0.444"]
                  [clojure.java-time "0.3.2"]
                  [org.clojure/data.json "1.0.0"]
+                 [buddy/buddy-sign "3.3.0"]
                  [common-functions "0.1.0-SNAPSHOT"]
                  [compojure "1.6.1"]
                  [com.novemberain/langohr "5.2.0"]

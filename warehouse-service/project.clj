@@ -12,6 +12,7 @@
                  [org.clojure/data.json "1.0.0"]
                  [common-functions "0.1.0-SNAPSHOT"]
                  [compojure "1.6.1"]
+                 [buddy/buddy-sign "3.3.0"]
                  [com.novemberain/langohr "5.2.0"]
                  [com.fzakaria/slf4j-timbre "0.3.20"]
                  [slingshot "0.12.2"]
