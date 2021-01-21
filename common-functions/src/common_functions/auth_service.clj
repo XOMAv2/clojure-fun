@@ -16,7 +16,7 @@
 
 (def users
   [["warranty-service" (hashers/derive "warranty-service" salt)]
-   ["warehouse-service" (hashers/derive "warranty-service" salt)]
+   ["warehouse-service" (hashers/derive "warehouse-service" salt)]
    ["order-service" (hashers/derive "order-service" salt)]
    ["store-service" (hashers/derive "store-service" salt)]])
 
