@@ -116,6 +116,8 @@
      (create-response 404 {:message "User not found"}))
    (catch #(#{500 503} (:status %)) {:as response}
      (assoc response :status 422))
+   (catch [:status 404] {:as response}
+     response)
    (catch Exception e
      (create-response 500 {:message (ex-message e)}))))
 

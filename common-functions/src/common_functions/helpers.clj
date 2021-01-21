@@ -57,7 +57,7 @@
              {:result :soft-failure})
            (catch Exception _
              {:result :soft-failure})))
-   {:max-retries 3 :retry-after-ms 1000}))
+   {:max-retries 3 :retry-after-ms 10000}))
 
 (defn apply-cb-service-call
   [cb-call-function & args]
