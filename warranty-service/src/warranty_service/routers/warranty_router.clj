@@ -8,7 +8,7 @@
             [buddy.core.keys :as keys]
             [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
-            [common-functions.helpers :refer [validate-and-handle]]
+            [common-functions.helpers :refer [valid?-handle]]
             [warranty-service.services.warranty-service :as service]))
 
 (s/def ::reason string?)
@@ -19,9 +19,9 @@
 
 (defn validate-and-make-warranty-decision!
   [item-uid body]
-  (validate-and-handle service/warranty-decision!
-                       [uuid? item-uid]
-                       [::request-warranty-decision body]))
+  (valid?-handle service/warranty-decision!
+                 [uuid? item-uid]
+                 [::request-warranty-decision body]))
 
 (defroutes public-routes
   (POST "/api/v1/warranty/auth" {{auth "authorization"} :headers}
@@ -29,12 +29,12 @@
 
 (defroutes private-routes
   (context "/api/v1/warranty/:item-uid" [item-uid :<< as-uuid]
-    (GET "/" [] (validate-and-handle service/get-warranty!
-                                     [uuid? item-uid]))
-    (POST "/" [] (validate-and-handle service/start-warranty!
-                                      [uuid? item-uid]))
-    (DELETE "/" [] (validate-and-handle service/close-warranty!
-                                        [uuid? item-uid]))
+    (GET "/" [] (valid?-handle service/get-warranty!
+                               [uuid? item-uid]))
+    (POST "/" [] (valid?-handle service/start-warranty!
+                                [uuid? item-uid]))
+    (DELETE "/" [] (valid?-handle service/close-warranty!
+                                  [uuid? item-uid]))
     (POST "/warranty" {:keys [body]} (validate-and-make-warranty-decision!
                                       item-uid
                                       body))))

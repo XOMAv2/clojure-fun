@@ -8,7 +8,7 @@
             [common-functions.auth-service :as auth-service]
             [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
-            [common-functions.helpers :refer [validate-and-handle]]
+            [common-functions.helpers :refer [valid?-handle]]
             [warehouse-service.services.warehouse-service :as warehouse]
             [warehouse-service.services.warranty-service :as warranty]))
 
@@ -35,22 +35,22 @@
 (defroutes private-routes
   (context "/api/v1/warehouse" []
     (POST "/" {:keys [body]}
-      (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
-                           [::take-item-from-warehouse body]))
+      (valid?-handle #(warehouse/take-item! (update % :orderUid as-uuid))
+                     [::take-item-from-warehouse body]))
     (DELETE "/rollback" {{order-item-uid :orderItemUid} :body}
-      (validate-and-handle #(warehouse/rollback-take-item! (as-uuid %))
-                           [::orderItemUid order-item-uid]))
+      (valid?-handle #(warehouse/rollback-take-item! (as-uuid %))
+                     [::orderItemUid order-item-uid]))
     (context "/:item-uid" [item-uid :<< as-uuid]
-      (GET "/" [] (validate-and-handle warehouse/get-item-info!
-                                       [uuid? item-uid]))
-      (DELETE "/" [] (validate-and-handle warehouse/return-item!
+      (GET "/" [] (valid?-handle warehouse/get-item-info!
+                                 [uuid? item-uid]))
+      (DELETE "/" [] (valid?-handle warehouse/return-item!
+                                    [uuid? item-uid]))
+      (POST "/rollback" [] (valid?-handle warehouse/rollback-return-item!
                                           [uuid? item-uid]))
-      (POST "/rollback" [] (validate-and-handle warehouse/rollback-return-item!
-                                                [uuid? item-uid]))
       (POST "/warranty" {:keys [body]}
-        (validate-and-handle #(warranty/warranty-request! % (:reason %2))
-                             [uuid? item-uid]
-                             [::request-item-warranty body])))))
+        (valid?-handle #(warranty/warranty-request! % (:reason %2))
+                       [uuid? item-uid]
+                       [::request-item-warranty body])))))
 
 (def router (handler/api (routes public-routes
                                  private-routes

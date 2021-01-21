@@ -4,7 +4,7 @@
             [compojure.route :refer [not-found]]
             [clojure.spec.alpha :as s]
             [compojure.coercions :refer [as-uuid]]
-            [common-functions.helpers :refer [validate-and-handle]]
+            [common-functions.helpers :refer [valid?-handle]]
             [session-service.services.session-service :as service])
   (:use [clojure.set :only [rename-keys]]))
 
@@ -30,19 +30,19 @@
 (defroutes routes
   (context "/api/v1/session/oauth2" []
     (POST "/auth" {:keys [body]}
-      (validate-and-handle #(service/auth (rename-keys % {:clientId :client-id}))
-                           [::auth-body body]))
+      (valid?-handle #(service/auth (rename-keys % {:clientId :client-id}))
+                     [::auth-body body]))
     (POST "/token" {:keys [body]}
-      (validate-and-handle #(service/code->jwt
-                             (-> %
-                                 (update :code as-uuid)
-                                 (rename-keys {:clientId :client-id
-                                               :clientSecret :client-secret})))
+      (valid?-handle #(service/code->jwt
+                       (-> %
+                           (update :code as-uuid)
+                           (rename-keys {:clientId :client-id
+                                         :clientSecret :client-secret})))
                            [::token-body body]))
     (POST "/refresh" {{refresh-token :refreshToken} :body}
-      (validate-and-handle service/refresh [string? refresh-token]))
+      (valid?-handle service/refresh [string? refresh-token]))
     (POST "/check" {{access-token :accessToken} :body}
-      (validate-and-handle service/check [string? access-token])))
+      (valid?-handle service/check [string? access-token])))
   (not-found {:status 404}))
 
 (def router (handler/api routes))

@@ -5,7 +5,7 @@
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [clojure.spec.alpha :as s]
-            [common-functions.helpers :refer [validate-and-handle]]
+            [common-functions.helpers :refer [valid?-handle]]
             [store-service.services.store-service :as service]))
 
 (s/def ::model string?)
@@ -22,26 +22,26 @@
   (context "/api/v1/store/:user-uid" {{user-uid :user-uid} :params
                                       {{claims-uid :user-uid} :claims} :params}
     (GET "/orders" []
-      (validate-and-handle #(service/find-user-orders! (as-uuid claims-uid) %)
-                           [uuid? (as-uuid user-uid)]))
+      (valid?-handle #(service/find-user-orders! (as-uuid claims-uid) %)
+                     [uuid? (as-uuid user-uid)]))
     (POST "/purchase" {:keys [body]}
-      (validate-and-handle #(service/make-purchase! (as-uuid claims-uid) % %2)
-                           [uuid? (as-uuid user-uid)]
-                           [::purchase-item body]))
+      (valid?-handle #(service/make-purchase! (as-uuid claims-uid) % %2)
+                     [uuid? (as-uuid user-uid)]
+                     [::purchase-item body]))
     (context "/:order-uid" [order-uid :<< as-uuid]
       (GET "/" []
-        (validate-and-handle #(service/find-user-order! (as-uuid claims-uid) % %2)
-                             [uuid? (as-uuid user-uid)]
-                             [uuid? order-uid]))
+        (valid?-handle #(service/find-user-order! (as-uuid claims-uid) % %2)
+                       [uuid? (as-uuid user-uid)]
+                       [uuid? order-uid]))
       (POST "/warranty" {:keys [body]}
-        (validate-and-handle #(service/warranty-request! (as-uuid claims-uid) % %2 %3)
-                             [uuid? (as-uuid user-uid)]
-                             [uuid? order-uid]
-                             [::request-warranty body]))
+        (valid?-handle #(service/warranty-request! (as-uuid claims-uid) % %2 %3)
+                       [uuid? (as-uuid user-uid)]
+                       [uuid? order-uid]
+                       [::request-warranty body]))
       (DELETE "/refund" []
-        (validate-and-handle  #(service/refund-purchase! (as-uuid claims-uid) % %2)
-                              [uuid? (as-uuid user-uid)]
-                              [uuid? order-uid]))))
+        (valid?-handle  #(service/refund-purchase! (as-uuid claims-uid) % %2)
+                        [uuid? (as-uuid user-uid)]
+                        [uuid? order-uid]))))
   (not-found {:status 404}))
 
 (def router (handler/api routes))
