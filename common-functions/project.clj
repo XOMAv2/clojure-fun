@@ -9,6 +9,7 @@
                  [slingshot "0.12.2"]
                  [clj-http "3.10.3"]
                  [clj-time "0.15.2"]
+                 [yogthos/config "1.1.7"]
                  [buddy/buddy-sign "3.3.0"]
                  [buddy/buddy-hashers "1.6.0"]
                  [org.clojure/data.json "1.0.0"]
