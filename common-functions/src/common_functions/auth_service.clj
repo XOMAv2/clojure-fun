@@ -31,8 +31,9 @@
   [auth-header-base64 user-authenticated? private-key]
   (try
     (if auth-header-base64
-      (let [auth-header (base64->str auth-header-base64)
-            [name password] (str/split (str/replace-first auth-header #"Basic " "") #":")]
+      (let [auth-header-base64 (str/replace-first auth-header-base64 #"Basic " "")
+            auth-header (base64->str auth-header-base64)
+            [name password] (str/split auth-header #":")]
         (if (user-authenticated? name password)
           (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
                 access-token (jwt/sign claims private-key {:alg :rs256})]
