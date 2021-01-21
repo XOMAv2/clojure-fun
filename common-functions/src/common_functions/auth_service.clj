@@ -39,8 +39,8 @@
           (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
                 access-token (jwt/sign claims private-key {:alg :rs256})]
             (create-response 200 {:accessToken access-token}))
-          (create-response 418 "Invalid name or password.")))
-      (create-response 401 "Authorization header is missing"))
+          (create-response 418 {:message "Invalid name or password."})))
+      (create-response 401 {:message "Authorization header is missing"}))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn auth

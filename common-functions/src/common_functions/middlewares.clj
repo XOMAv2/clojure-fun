@@ -41,13 +41,13 @@
              claims (json/read-str (:body response) :key-fn keyword)
              request (claims-handler claims request)]
          (handler request))
-       (create-response 401 "Authorization header is missing"))
+       (create-response 401 {:message "Authorization header is missing"}))
      (catch [:status 401] {:as response}
        response)
      (catch java.net.ConnectException _
-       (create-response 422 "Authorization service is not available."))
+       (create-response 422 {:message "Authorization service is not available.")})
      (catch #(#{500 503} (:status %)) _
-       (create-response 422 "Authorization service is not available."))
+       (create-response 422 {:message "Authorization service is not available."}))
      (catch Exception e
        (create-response 500 {:message (ex-message e)}))))))
 
@@ -69,7 +69,7 @@
               claims (create-response 200 (jwt/unsign token public-key {:alg :rs256}))
               request (claims-handler claims request)]
           (handler request))
-        (create-response 401 "Authorization header is missing"))
+        (create-response 401 {:message "Authorization header is missing"}))
       (catch clojure.lang.ExceptionInfo e
         (create-response 401 {:message (ex-message e)}))
       (catch Exception e
