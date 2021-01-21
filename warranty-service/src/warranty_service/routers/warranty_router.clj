@@ -40,7 +40,6 @@
                                       body))))
 
 (def router (handler/api (routes public-routes
-                                 private-routes
                                  (wrap-routes private-routes
                                               jwt-authorization
                                               (keys/public-key "jwtRS256.key.pub"))
