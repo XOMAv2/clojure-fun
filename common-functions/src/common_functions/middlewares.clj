@@ -71,6 +71,6 @@
           (handler request))
         (create-response 401 "Authorization header is missing"))
       (catch clojure.lang.ExceptionInfo e
-        (create-response 401 {:message (ex-message e)})
+        (create-response 401 {:message (ex-message e)}))
       (catch Exception e
         (create-response 500 {:message (ex-message e)}))))))
