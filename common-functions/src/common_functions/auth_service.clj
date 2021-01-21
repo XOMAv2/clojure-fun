@@ -20,7 +20,7 @@
 (defn authorization-service-func
   "Выдача пользователю токена доступа через его аутентификацию.
    Код 401 означает, что в запросе отсутствует заголовок \"Authorization\".
-   Код 422 означает, что пользователь не смог пройти авторизацию.
+   Код 418 означает, что пользователь не смог пройти авторизацию.
    Код 200 означает, что токен выдан и помещён в тело в поле \"accessToken\".
    Аргументы функции:
    * auth-header-base64 - содержимое заголовка \"Authorization\" запроса.
@@ -37,7 +37,7 @@
           (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
                 access-token (jwt/sign claims private-key {:alg :rs256})]
             (create-response 200 {:accessToken access-token}))
-          (create-response 422 "Invalid name or password.")))
+          (create-response 418 "Invalid name or password.")))
       (create-response 401 "Authorization header is missing"))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
