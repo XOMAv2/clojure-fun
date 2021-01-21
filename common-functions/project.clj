@@ -7,5 +7,7 @@
                  [clojure.java-time "0.3.2"]
                  [org.clojure/java.jdbc "0.7.11"]
                  [slingshot "0.12.2"]
+                 [clj-http "3.10.3"]
+                 [org.clojure/data.json "1.0.0"]
                  [org.postgresql/postgresql "42.2.18.jre7"]]
   :repl-options {:init-ns common-functions.core})
