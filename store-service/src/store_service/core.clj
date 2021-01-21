@@ -4,7 +4,8 @@
             [store-service.repositories.users-repository :as rep]
             [ring.adapter.jetty :refer [run-jetty]]
             [common-functions.uuid :refer [uuid]]
-            [common-functions.middlewares :refer [remove-utf-8-from-header]]
+            [config.core :refer [load-env]]
+            [common-functions.middlewares :refer [remove-utf-8-from-header authorize]]
             [store-service.routers.users-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))
@@ -16,6 +17,11 @@
     (when (not (rep/get-user-by-user-uid! (:user_uid user)))
       (rep/add-user! user))))
 
+(def token-check-url (let [config (load-env)
+                           env-type (:env-type config)
+                           env (env-type (:env config))]
+                       (str (:session-url env) "api/v1/session/oauth2/check")))
+
 ; Middleware выполняются снизу вверх для запроса и сверху вниз для ответа.
 (def app
   (-> app-naked
@@ -23,7 +29,13 @@
       (wrap-json-response)
       (remove-utf-8-from-header)
       ; Преобразует тело запроса в словарь с ключами кейвордами.
-      (wrap-json-body {:keywords? true})))
+      (wrap-json-body {:keywords? true})
+      (authorize token-check-url)))
+
+(let [config (load-env)
+      env-type (:env-type config)
+      env (env-type (:env config))]
+  (:db-spec env))
 
 (defn -main
   [& args]
