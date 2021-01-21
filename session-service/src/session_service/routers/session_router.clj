@@ -1,7 +1,7 @@
 (ns session-service.routers.session-router
   (:require [compojure.core :refer [POST defroutes context]]
             [compojure.handler :as handler]
-            [compojure.route :as route]
+            [compojure.route :refer [not-found]]
             [clojure.spec.alpha :as s]
             [compojure.coercions :refer [as-uuid]]
             [common-functions.helpers :refer [validate-and-handle]]
@@ -29,8 +29,8 @@
 
 (defroutes routes
   (context "/api/v1/session/oauth2" []
-    (POST "/authorize" {:keys [body]}
-      (validate-and-handle #(service/authorize (rename-keys % {:clientId :client-id}))
+    (POST "/auth" {:keys [body]}
+      (validate-and-handle #(service/auth (rename-keys % {:clientId :client-id}))
                            [::auth-body body]))
     (POST "/token" {:keys [body]}
       (validate-and-handle #(service/code->jwt
@@ -43,6 +43,6 @@
       (validate-and-handle service/refresh [string? refresh-token]))
     (POST "/check" {{access-token :accessToken} :body}
       (validate-and-handle service/check [string? access-token])))
-  (route/not-found {:status 404}))
+  (not-found {:status 404}))
 
 (def router (handler/api routes))
