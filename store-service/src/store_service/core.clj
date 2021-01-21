@@ -1,7 +1,8 @@
 (ns store-service.core
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [config.core :refer [load-env]]
-            [common-functions.middlewares :refer [remove-utf-8-from-header authorize]]
+            [common-functions.middlewares :refer [remove-utf-8-from-header
+                                                  oauth2-authorization]]
             [store-service.routers.users-router :refer [router] :rename {router app-naked}]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]])
   (:gen-class))
@@ -19,11 +20,11 @@
       (remove-utf-8-from-header)
       ; Преобразует тело запроса в словарь с ключами кейвордами.
       (wrap-json-body {:keywords? true})
-      (authorize token-check-url
-                 (fn [claims request]
-                   (let [params (:params request)
-                         params (assoc params :claims claims)]
-                     (assoc request :params params))))))
+      (oauth2-authorization token-check-url
+                            (fn [claims request]
+                              (let [params (:params request)
+                                    params (assoc params :claims claims)]
+                                (assoc request :params params))))))
 
 (let [config (load-env)
       env-type (:env-type config)
