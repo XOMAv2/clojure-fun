@@ -35,7 +35,7 @@
   "Запрос аутентификации пользователя для получения клиентом
    авторизационного кода.
    Код 404 означает, что сервис не зарегистрирован на сервере.
-   Код 422 означает, что пользователь не смог пройти авторизацию.
+   Код 418 означает, что пользователь не смог пройти авторизацию.
    Код 302 означает, что токены выданы, а авторизационный код помещён в
    заголовок Location после callback-пути в качестве квери-парамтера code."
   [{:keys [client-id] :as body}]
@@ -60,14 +60,14 @@
                             :exp (time/sql-timestamp (time/plus (time/local-date-time)
                                                                 (time/days 1)))})
           {:status 302 :headers {"Location" (str (:callback body) "?code=" authorization-code)}})
-        (create-response 422 {:message "Invalid name or password."}))
+        (create-response 418 {:message "Invalid name or password."}))
       (create-response 404 {:message "A client with a specific clientId was not found."}))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn code->jwt
   "Обмен авторизационного кода на jwt-токены при условии
    успешной аутентификации клиента.
-   Код 422 означает, что клиент не прошёл аутентификацию.
+   Код 418 означает, что клиент не прошёл аутентификацию.
    Код 404 означает, что токены для указанного кода не найдены.
    Код 401 означает, что срок действия авторизационного кода истёк.
    Код 200 означает, что авторизация пройдена и токены будут помещены в тело ответа."
@@ -86,7 +86,7 @@
                                     :refreshToken (:refresh_token row)})
               (create-response 401 {:message "Code is expired."})))
         (create-response 404 {:message (str "Tokens not found for code '" code "'.")}))
-      (create-response 422 {:message "Invalid clientId or clientSecret."}))
+      (create-response 418 {:message "Invalid clientId or clientSecret."}))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn refresh
