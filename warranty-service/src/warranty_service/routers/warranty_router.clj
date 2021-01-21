@@ -4,6 +4,7 @@
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
+            [common-functions.auth-service :as auth-service]
             [buddy.core.keys :as keys]
             [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
@@ -23,7 +24,8 @@
                        [::request-warranty-decision body]))
 
 (defroutes public-routes
-  (POST "/api/v1/warranty/auth" [] {:status 200}))
+  (POST "/api/v1/warranty/auth" {{auth "authorization"} :headers}
+    (auth-service/auth auth)))
 
 (defroutes private-routes
   (context "/api/v1/warranty/:item-uid" [item-uid :<< as-uuid]

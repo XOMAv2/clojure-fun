@@ -5,6 +5,7 @@
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
             [buddy.core.keys :as keys]
+            [common-functions.auth-service :as auth-service]
             [common-functions.middlewares :refer [jwt-authorization]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
@@ -28,7 +29,8 @@
 (s/def ::orderItemUid (s/and string? #(re-matches uuid-pattern %)))
 
 (defroutes public-routes
-  (POST "/api/v1/warehouse/auth" [] {:status 200}))
+  (POST "/api/v1/warehouse/auth" {{auth "authorization"} :headers}
+    (auth-service/auth auth)))
 
 (defroutes private-routes
   (context "/api/v1/warehouse" []
