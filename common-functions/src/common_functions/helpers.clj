@@ -18,6 +18,12 @@
     (assoc map key val)
     map))
 
+(defn if-conj
+  [source-map condition add-map]
+  (if condition
+    (conj source-map add-map)
+    source-map))
+
 (defn assoc-if-absent
   [map key val]
   (if (contains? map key)
