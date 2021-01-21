@@ -1,5 +1,5 @@
-(ns store-service.services.users-service
-  (:require [store-service.repositories.users-repository :as rep]))
+(ns session-service.services.users-service
+  (:require [session-service.repositories.users-repository :as rep]))
 
 (defn get-user-by-user-uid!
   [user-uid]

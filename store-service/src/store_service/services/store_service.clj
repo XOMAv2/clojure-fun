@@ -1,6 +1,5 @@
 (ns store-service.services.store-service
   (:require [store-service.services.orders-service :as orders]
-            [store-service.services.users-service :as users]
             [clojure.data.json :as json]
             [config.core :refer [load-env]]
             [store-service.services.warehouse-service :as warehouse]
@@ -14,9 +13,9 @@
                  (:store-url env)))
 
 (defn find-user-orders!
-  [user-uid]
+  [claims-user-uid user-uid]
   (try+
-   (if (users/user-exists? user-uid)
+   (if (= claims-user-uid user-uid)
      (let [user-orders (-> user-uid
                            (orders/get-order-info-by-user-uid!)
                            (:body)
@@ -60,9 +59,9 @@
      (create-response 500 {:message (ex-message e)}))))
 
 (defn find-user-order!
-  [user-uid order-uid]
+  [claims-user-uid user-uid order-uid]
   (try+
-   (if (users/user-exists? user-uid)
+   (if (= claims-user-uid user-uid)
      (let [order-response (orders/get-order-info! user-uid order-uid)
            order-body (json/read-str (:body order-response)
                                      :key-fn keyword)
@@ -101,9 +100,9 @@
      (create-response 500 {:message (ex-message e)}))))
 
 (defn make-purchase!
-  [user-uid request]
+  [claims-user-uid user-uid request]
   (try+
-   (if (users/user-exists? user-uid)
+   (if (= claims-user-uid user-uid)
      (let [response (orders/make-purchase! user-uid request)
            body (json/read-str (:body response)
                                :key-fn keyword)]
@@ -120,9 +119,9 @@
      (create-response 500 {:message (ex-message e)}))))
 
 (defn refund-purchase!
-  [user-uid order-uid]
+  [claims-user-uid user-uid order-uid]
   (try+
-   (if (users/user-exists? user-uid)
+   (if (= claims-user-uid user-uid)
      (do
        (orders/refund-purchase! order-uid)
        {:status 204})
@@ -133,9 +132,9 @@
      (create-response 500 {:message (ex-message e)}))))
 
 (defn warranty-request!
-  [user-uid order-uid request]
+  [claims-user-uid user-uid order-uid request]
   (try+
-   (if (users/user-exists? user-uid)
+   (if (= claims-user-uid user-uid)
      (let [response (orders/warranty-request! order-uid request)
            body (json/read-str (:body response)
                                :key-fn keyword)]
