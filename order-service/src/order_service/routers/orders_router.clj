@@ -1,9 +1,12 @@
 (ns order-service.routers.orders-router
   (:require [compojure.core :refer [GET POST DELETE
-                                    defroutes context]]
+                                    defroutes context routes wrap-routes]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
+            [common-functions.middlewares :refer [jwt-authorization]]
+            [common-functions.auth-service :refer [auth]]
+            [buddy.core.keys :as keys]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [order-service.services.orders-service :as orders]
@@ -19,7 +22,10 @@
 (s/def ::create-order (s/keys :req-un [::model
                                        ::size]))
 
-(defroutes routes
+(defroutes public-routes
+  (POST "/api/v1/orders/auth" {{auth "authorization"} :headers} (auth auth)))
+
+(defroutes private-routes
   (context "/api/v1/orders/:uid" [uid :<< as-uuid]
     (GET "/" [] (validate-and-handle orders/get-user-orders!
                                      [uuid? uid]))
@@ -33,7 +39,10 @@
                                                           [::warranty-request body]))
     (GET "/:order-uid" [order-uid :<< as-uuid] (validate-and-handle orders/get-user-order!
                                                                     [uuid? uid]
-                                                                    [uuid? order-uid])))
-  (not-found {:status 404}))
+                                                                    [uuid? order-uid]))))
 
-(def router (handler/api routes))
+(def router (handler/api (routes public-routes
+                                 (wrap-routes private-routes
+                                              jwt-authorization
+                                              (keys/public-key "jwtRS256.key.pub"))
+                                 (not-found {:status 404}))))
