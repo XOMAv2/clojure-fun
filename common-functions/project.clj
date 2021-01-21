@@ -10,6 +10,7 @@
                  [clj-http "3.10.3"]
                  [clj-time "0.15.2"]
                  [buddy/buddy-sign "3.3.0"]
+                 [buddy/buddy-hashers "1.6.0"]
                  [org.clojure/data.json "1.0.0"]
                  [org.postgresql/postgresql "42.2.18.jre7"]]
   :repl-options {:init-ns common-functions.core})

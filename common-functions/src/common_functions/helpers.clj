@@ -1,9 +1,5 @@
 (ns common-functions.helpers
   (:require [clojure.spec.alpha :as s]
-            [clojure.string :as str]
-            [buddy.sign.jwt :as jwt]
-            [common-functions.base64 :refer [base64->str]]
-            [clj-time.core :as t]
             [common-functions.circuit-breaker :as cb])
   (:use [slingshot.slingshot :only [throw+ try+]]))
 
@@ -76,27 +72,3 @@
         response)
       (throw+ {:status 503
                :body {:message "The service is not available."}}))))
-
-(defn authorization-service-func
-  "Аутентификация пользователя для выдачи ему токена доступа.
-   Код 401 означает, что в запросе отсутствует заголовок \"Authorization\".
-   Код 422 означает, что пользователь не смог пройти авторизацию.
-   Код 200 означает, что токен выдан и помещён в тело в поле \"accessToken\".
-   Аргументы функции:
-   * auth-header-base64 - содержимое заголовка \"Authorization\" запроса.
-   * user-authenticated? - функция, которая по name и password пользователя
-                           определяет, авторизирован он или нет.
-                           (user-authenticated? name password)
-   * private-key - секретный ключ сервиса."
-  [auth-header-base64 user-authenticated? private-key]
-  (try
-    (if auth-header-base64
-      (let [auth-header (base64->str auth-header-base64)
-            [name password] (str/split (str/replace-first auth-header #"Basic " "") #":")]
-        (if (user-authenticated? name password)
-          (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
-                access-token (jwt/sign claims private-key {:alg :rs256})]
-            (create-response 200 {:accessToken access-token}))
-          (create-response 422 "Invalid name or password.")))
-      (create-response 401 "Authorization header is missing"))
-    (catch Exception e (create-response 500 (ex-message e)))))
