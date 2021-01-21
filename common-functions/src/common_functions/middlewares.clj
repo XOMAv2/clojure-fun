@@ -2,6 +2,7 @@
   (:require [common-functions.helpers :refer [create-response]]
             [clj-http.client :as client]
             [clojure.string :as str]
+            [buddy.sign.jwt :as jwt]
             [clojure.data.json :as json])
   (:use [slingshot.slingshot :only [try+]]))
 
@@ -49,3 +50,27 @@
        (create-response 422 "Authorization service is not available."))
      (catch Exception e
        (create-response 500 (ex-message e)))))))
+
+(defn jwt-authorization
+  "Middleware для простой проверки времени жизни авторизационного токена.
+   Аргументы функции:
+   public-key - публичный ключ для валидации токена.
+   claims-handler - функция для обработки claim'ов, которые находились в токене.
+                    Может отсутствовать. Если присутствует, то должна принимать
+                    на вход два параметры - это дессериализованные claim'ы и
+                    request, а возвращать request."
+  ([handler public-key]
+   (jwt-authorization handler public-key (fn [claims request] request)))
+  ([handler public-key claims-handler]
+   (fn [request]
+     (try+
+      (if-let [auth-header (get (:headers request) "authorization")]
+        (let [token (str/replace-first auth-header #"Bearer " "")
+              claims (create-response 200 (jwt/unsign token public-key {:alg :rs256}))
+              request (claims-handler claims request)]
+          (handler request))
+        (create-response 401 "Authorization header is missing"))
+      (catch clojure.lang.ExceptionInfo e
+        (create-response 401 (ex-message e)))
+      (catch Exception e
+        (create-response 500 (ex-message e)))))))
