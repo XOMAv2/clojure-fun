@@ -49,7 +49,7 @@
      (catch #(#{500 503} (:status %)) _
        (create-response 422 "Authorization service is not available."))
      (catch Exception e
-       (create-response 500 (ex-message e)))))))
+       (create-response 500 {:message (ex-message e)}))))))
 
 (defn jwt-authorization
   "Middleware для простой проверки времени жизни авторизационного токена.
@@ -71,6 +71,6 @@
           (handler request))
         (create-response 401 "Authorization header is missing"))
       (catch clojure.lang.ExceptionInfo e
-        (create-response 401 (ex-message e)))
+        (create-response 401 {:message (ex-message e)})
       (catch Exception e
-        (create-response 500 (ex-message e)))))))
+        (create-response 500 {:message (ex-message e)}))))))

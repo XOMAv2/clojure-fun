@@ -103,9 +103,9 @@
              access-token (jwt/sign claims private-key {:alg :rs256})]
          (create-response 200 {:refreshToken refresh-token :accessToken access-token}))
        (catch clojure.lang.ExceptionInfo e
-         (create-response 401 (ex-message e)))
+         (create-response 401 {:message (ex-message e)}))
        (catch Exception e
-         (create-response 500 (ex-message e)))))
+         (create-response 500 {:message (ex-message e)}))))
 
 (defn check
   "Подтверждение подлинности ваданного токена.
@@ -115,6 +115,6 @@
   ;(jwt/unsign token public-key {:alg :rs256 :now (t/minus (t/now) (t/seconds 5))})
   (try (create-response 200 (jwt/unsign access-token public-key {:alg :rs256}))
        (catch clojure.lang.ExceptionInfo e
-         (create-response 401 (ex-message e)))
+         (create-response 401 {:message (ex-message e)}))
        (catch Exception e
-         (create-response 500 (ex-message e)))))
+         (create-response 500 {:message (ex-message e)}))))
