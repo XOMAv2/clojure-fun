@@ -5,7 +5,7 @@
             [compojure.handler :as handler]
             [compojure.route :refer [not-found]]
             [common-functions.middlewares :refer [jwt-authorization]]
-            [common-functions.auth-service :refer [auth]]
+            [common-functions.auth-service :as auth-service]
             [buddy.core.keys :as keys]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
@@ -23,7 +23,8 @@
                                        ::size]))
 
 (defroutes public-routes
-  (POST "/api/v1/orders/auth" {{auth "authorization"} :headers} (auth auth)))
+  (POST "/api/v1/orders/auth" {{auth "authorization"} :headers}
+    (auth-service/auth auth)))
 
 (defroutes private-routes
   (context "/api/v1/orders/:uid" [uid :<< as-uuid]

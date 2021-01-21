@@ -16,7 +16,7 @@
                                                    :status :warrantyStatus}))
            (create-response 404
                             {:message "The warranty with the specified item_uid was not found."})))
-       (catch Exception e (create-response 500  {:message (ex-message e)}))))
+       (catch Exception e (create-response 500 {:message (ex-message e)}))))
 
 (defn start-warranty!
   "Добавление строки в таблицу warranty через репозиторий."

@@ -35,11 +35,13 @@
       (let [auth-header-base64 (str/replace-first auth-header-base64 #"Basic " "")
             auth-header (base64->str auth-header-base64)
             [name password] (str/split auth-header #":")]
-        (if (user-authenticated? name password)
-          (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
-                access-token (jwt/sign claims private-key {:alg :rs256})]
-            (create-response 200 {:accessToken access-token}))
-          (create-response 418 {:message "Invalid name or password."})))
+        (if (not (or (empty? name) (empty? password)))
+          (if (user-authenticated? name password)
+            (let [claims {:exp (t/plus (t/now) (t/minutes 30))}
+                  access-token (jwt/sign claims private-key {:alg :rs256})]
+              (create-response 200 {:accessToken access-token}))
+            (create-response 418 {:message "Invalid name or password."}))
+          (create-response 418 {:message "Name or password is empty."})))
       (create-response 401 {:message "Authorization header is missing"}))
     (catch Exception e (create-response 500 {:message (ex-message e)}))))
 

@@ -45,7 +45,7 @@
      (catch [:status 401] {:as response}
        response)
      (catch java.net.ConnectException _
-       (create-response 422 {:message "Authorization service is not available.")})
+       (create-response 422 {:message "Authorization service is not available."}))
      (catch #(#{500 503} (:status %)) _
        (create-response 422 {:message "Authorization service is not available."}))
      (catch Exception e

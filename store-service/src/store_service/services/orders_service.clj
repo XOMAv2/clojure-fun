@@ -8,15 +8,19 @@
             [common-functions.uuid :refer [json-write-uuid]])
   (:use [slingshot.slingshot :only [try+]]))
 
-(def access-token (atom nil))
-(def name "")
-(def password "")
-(def auth-path "http://localhost:8380/api/v1/orders/auth")
-
 (def orders-url (let [config (load-env)
                       env-type (:env-type config)
                       env (env-type (:env config))]
                      (:orders-url env)))
+
+(def name "store-service")
+(def password "store-service")
+(def auth-path (str orders-url "api/v1/orders/auth"))
+(def access-token (atom (let [header (str->base64str (str name ":" password))
+                              header (str "Basic " header)
+                              response (client/post auth-path {:headers {"Authorization" header}})
+                              claims (json/read-str (:body response) :key-fn keyword)]
+                          (:accessToken claims))))
 
 (def cb-get-order-info!
   (def-cb-service-call
