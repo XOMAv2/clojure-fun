@@ -3,7 +3,7 @@
                                     defroutes context]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
-            [compojure.route :as route]
+            [compojure.route :refer [not-found]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [warranty-service.services.warranty-service :as service]))
@@ -31,6 +31,6 @@
     (POST "/warranty" {:keys [body]} (validate-and-make-warranty-decision!
                                       item-uid
                                       body)))
-  (route/not-found {:status 404}))
+  (not-found {:status 404}))
 
 (def router (handler/api routes))

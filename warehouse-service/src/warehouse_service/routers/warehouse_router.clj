@@ -3,7 +3,7 @@
                                     defroutes context]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
-            [compojure.route :as route]
+            [compojure.route :refer [not-found]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [warehouse-service.services.warehouse-service :as warehouse]
@@ -30,7 +30,7 @@
     (POST "/" {:keys [body]}
       (validate-and-handle #(warehouse/take-item! (update % :orderUid as-uuid))
                            [::take-item-from-warehouse body]))
-    (DELETE "/rollback" {{order-item-uid :orderItemUid } :body}
+    (DELETE "/rollback" {{order-item-uid :orderItemUid} :body}
       (validate-and-handle #(warehouse/rollback-take-item! (as-uuid %))
                            [::orderItemUid order-item-uid]))
     (context "/:item-uid" [item-uid :<< as-uuid]
@@ -44,6 +44,6 @@
         (validate-and-handle #(warranty/warranty-request! % (:reason %2))
                              [uuid? item-uid]
                              [::request-item-warranty body]))))
-  (route/not-found {:status 404}))
+  (not-found {:status 404}))
 
 (def router (handler/api routes))

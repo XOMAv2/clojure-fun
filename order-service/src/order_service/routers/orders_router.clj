@@ -3,7 +3,7 @@
                                     defroutes context]]
             [compojure.coercions :refer [as-uuid]]
             [compojure.handler :as handler]
-            [compojure.route :as route]
+            [compojure.route :refer [not-found]]
             [clojure.spec.alpha :as s]
             [common-functions.helpers :refer [validate-and-handle]]
             [order-service.services.orders-service :as orders]
@@ -34,6 +34,6 @@
     (GET "/:order-uid" [order-uid :<< as-uuid] (validate-and-handle orders/get-user-order!
                                                                     [uuid? uid]
                                                                     [uuid? order-uid])))
-  (route/not-found {:status 404}))
+  (not-found {:status 404}))
 
 (def router (handler/api routes))
