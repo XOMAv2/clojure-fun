@@ -8,7 +8,8 @@
                :warranty-url "http://localhost:8180/"
                :warehouse-url "http://localhost:8280/"
                :orders-url "http://localhost:8380/"
-               :store-url "http://localhost:8480/"}
+               :store-url "http://localhost:8480/"
+               :session-url "http://localhost:8580/"}
        :heroku {:db-spec {:dbtype "postgresql"
                           :host "ec2-176-34-114-78.eu-west-1.compute.amazonaws.com"
                           :dbname "d2a7gmjtde2dmn"
@@ -19,7 +20,8 @@
                 :warranty-url "https://lab2-xomav2-warranty-service.herokuapp.com/"
                 :warehouse-url "https://lab2-xomav2-warehouse-service.herokuapp.com/"
                 :orders-url "https://lab2-xomav2-order-service.herokuapp.com/"
-                :store-url "https://lab2-xomav2-store-service.herokuapp.com/"}}
+                :store-url "https://lab2-xomav2-store-service.herokuapp.com/"
+                :session-url "https://lab4-xomav2-session-service.herokuapp.com/"}}
  :salt "000001772107ed8a"}
 
 
