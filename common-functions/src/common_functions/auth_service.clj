@@ -1,9 +1,11 @@
 (ns common-functions.auth-service
   (:require [config.core :refer [load-env]]
             [clojure.string :as str]
-            [common-functions.base64 :refer [base64->str]]
+            [common-functions.base64 :refer [base64->str str->base64str]]
             [common-functions.helpers :refer [create-response]]
             [clj-time.core :as t]
+            [clj-http.client :as client]
+            [clojure.data.json :as json]
             [buddy.sign.jwt :as jwt]
             [buddy.core.keys :as keys]
             [buddy.hashers :as hashers]))
@@ -52,3 +54,12 @@
                                 (let [password-hash (hashers/derive password salt)]
                                   (some #(= % [name password-hash]) users)))
                               private-key))
+
+(defn auth-request
+  "Запрос авторизации одного микросервиса у другого."
+  [name password auth-path]
+  (let [header (str->base64str (str name ":" password))
+        header (str "Basic " header)
+        response (client/post auth-path {:headers {"Authorization" header}})
+        claims (json/read-str (:body response) :key-fn keyword)]
+    (:accessToken claims)))
