@@ -55,8 +55,9 @@
                                                         :value-fn json-write-uuid)
                                         {:content-type "application/json"})
                             (rmq/close channel)
-                            (rmq/close conn))))
-              map-body (when response
+                            (rmq/close conn)
+                            nil)))
+              map-body (when (not (empty? (:body response)))
                          (json/read-str (:body response) :key-fn keyword))]
           (create-response 200 map-body))
         (catch [:status 404] {:as response}

@@ -7,6 +7,7 @@
             [common-functions.middlewares :refer [remove-utf-8-from-header]]
             [warranty-service.entities.warranty :refer [*db-spec* warranty-table-spec]]
             [config.core :refer [load-env]]
+            [common-functions.uuid :refer [uuid]]
             [clojure.data.json :as json]
             [langohr.core :as rmq]
             [langohr.channel :as lch]
@@ -28,9 +29,11 @@
   default-exchange-name "")
 
 (defn message-handler
-  [ch {:as meta} ^bytes payload]
-  (try (let [unpacked (json/read-str payload :key-fn keyword)
+  [_ {:as meta} ^bytes payload]
+  (try (let [payload (String. payload "UTF-8")
+             unpacked (json/read-str payload :key-fn keyword)
              item-uid (:item-uid unpacked)
+             item-uid (uuid item-uid)
              body (:body unpacked)]
          (validate-and-make-warranty-decision! item-uid body))
        (catch Exception _)))

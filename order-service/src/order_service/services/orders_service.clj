@@ -1,7 +1,8 @@
 (ns order-service.services.orders-service
   (:require [order-service.repositories.orders-repository :as rep]
             [common-functions.helpers :refer [create-response]]
-            [java-time :as time]))
+            [java-time :as time])
+  (:use [slingshot.slingshot :only [throw+]]))
 
 (defn get-user-order!
   [user-uid order-uid]
@@ -32,7 +33,8 @@
   [order-uid]
   (let [order (rep/get-order-by-order-uid! order-uid)]
     (if (nil? order)
-      (throw (Exception. "The order with the specified order-uid was not found."))
+      (throw+ {:status 404 
+               :body {:message "The order with the specified order-uid was not found."}})
       order)))
     
 (defn create-order!

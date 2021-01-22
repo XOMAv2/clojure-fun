@@ -139,8 +139,8 @@
   (try+
    (if (users/user-exists? user-uid)
      (let [response (orders/warranty-request! order-uid request)
-           body (json/read-str (:body response)
-                               :key-fn keyword)]
+           body (when (not (empty? (:body response)))
+                  (json/read-str (:body response) :key-fn keyword))]
        (create-response 200
                         {:orderUid order-uid
                          :warrantyDate (:warrantyDate body)
